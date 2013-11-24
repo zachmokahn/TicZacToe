@@ -9,6 +9,14 @@
       this.player = player;
     }
 
+    Game.prototype.playerMove = function(position) {
+      return this.board[position] = "X";
+    };
+
+    Game.prototype.checkLocation = function(position) {
+      return this.board[position];
+    };
+
     return Game;
 
   })();

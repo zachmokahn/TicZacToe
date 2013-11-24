@@ -8,7 +8,7 @@
       player = new Player;
       return game = new Game(player);
     });
-    return describe("New Game", function() {
+    describe("New Game", function() {
       return it("board should be blank when game starts", function() {
         var position, _i, _len, _ref, _results;
 
@@ -19,6 +19,12 @@
           _results.push(expect(position === " ").toBeTruthy());
         }
         return _results;
+      });
+    });
+    return describe("Taking a turn", function() {
+      return it("should change position to 'x' when first player selects a board location", function() {
+        game.playerMove(1);
+        return expect(game.checkLocation(1)).toEqual("X");
       });
     });
   });
