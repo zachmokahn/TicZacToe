@@ -1,16 +1,24 @@
 class Game
-  board: [" "," "," "," "," "," "," "," "," "]
   constructor: (@player) ->
-  
+    @board = [" "," "," "," "," "," "," "," "," "]
+    @turn = "player"
+
   playerMove: (position) ->
-    @board[position] = "X" if @checkLocation(position) is " "
+    if @checkLocation(position) is " "
+      @board[position] = "X"
+      @changeTurn()
 
   checkLocation: (position) ->
     @board[position]
 
   computerMove: ->
     position = @computerLogic()
-    @board[position] = "O" if @checkLocation(position) is " "
+    if @checkLocation(position) is " "
+      @board[position] = "O"
+      @changeTurn()
+
+  changeTurn: ->
+    @turn = if @turn is "player" then "computer" else "player"
   
   computerLogic: ->
 

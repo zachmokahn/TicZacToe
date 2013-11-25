@@ -3,15 +3,16 @@
   var Game;
 
   Game = (function() {
-    Game.prototype.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
-
     function Game(player) {
       this.player = player;
+      this.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
+      this.turn = "player";
     }
 
     Game.prototype.playerMove = function(position) {
       if (this.checkLocation(position) === " ") {
-        return this.board[position] = "X";
+        this.board[position] = "X";
+        return this.changeTurn();
       }
     };
 
@@ -24,8 +25,13 @@
 
       position = this.computerLogic();
       if (this.checkLocation(position) === " ") {
-        return this.board[position] = "O";
+        this.board[position] = "O";
+        return this.changeTurn();
       }
+    };
+
+    Game.prototype.changeTurn = function() {
+      return this.turn = this.turn === "player" ? "computer" : "player";
     };
 
     Game.prototype.computerLogic = function() {};
