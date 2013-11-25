@@ -10,9 +10,11 @@
     }
 
     Game.prototype.playerMove = function(position) {
-      if (this.checkLocation(position) === " ") {
+      if (this.checkLocation(position) === " " && this.turn === "player") {
         this.board[position] = "X";
         return this.changeTurn();
+      } else {
+        return this.illegalTurnError();
       }
     };
 
@@ -24,9 +26,11 @@
       var position;
 
       position = this.computerLogic();
-      if (this.checkLocation(position) === " ") {
+      if (this.checkLocation(position) === " " && this.turn === "computer") {
         this.board[position] = "O";
         return this.changeTurn();
+      } else {
+        return this.illegalTurnError();
       }
     };
 
@@ -35,6 +39,14 @@
     };
 
     Game.prototype.computerLogic = function() {};
+
+    Game.prototype.raiseError = function(call) {
+      return alert(call);
+    };
+
+    Game.prototype.illegalTurnError = function() {
+      return this.raiseError("Illegal Move: move taken out of turn");
+    };
 
     return Game;
 

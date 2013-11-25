@@ -22,9 +22,7 @@
       });
     });
     describe("Taking a turn", function() {
-      game = void 0;
       beforeEach(function() {
-        game = new Game(player);
         game.playerMove(1);
         spyOn(game, 'computerLogic').andReturn(2);
         return game.computerMove();
@@ -35,19 +33,16 @@
       it("position should change to 'o' when computer selects a board location", function() {
         return expect(game.checkLocation(2)).toEqual("O");
       });
-      return it("position should not change if it is already filled on the board", function() {
+      return it("position should not change and error should be raised if it is already filled on the board", function() {
+        spyOn(game, 'illegalTurnError');
         game.playerMove(2);
         expect(game.checkLocation(2)).toEqual("O");
-        game.computerLogic.andReturn(1);
         game.computerMove();
-        return expect(game.checkLocation(1)).toEqual("X");
+        expect(game.checkLocation(1)).toEqual("X");
+        return expect(game.illegalTurnError.calls.length).toEqual(2);
       });
     });
     return describe("alternating turns", function() {
-      game = void 0;
-      beforeEach(function() {
-        return game = new Game(player);
-      });
       it("turn should initialize to the player", function() {
         return expect(game.turn).toEqual("player");
       });
@@ -61,12 +56,26 @@
         game.computerMove();
         return expect(game.turn).toEqual("player");
       });
-      return it("turn should not change if the 'user' makes an illegal move", function() {
-        game.playerMove(1);
+      it("turn should not change and error should be raised if the 'user' makes an illegal move", function() {
+        spyOn(game, 'illegalTurnError');
         spyOn(game, 'computerLogic').andReturn(2);
+        game.playerMove(1);
         game.computerMove();
         game.playerMove(2);
-        return expect(game.turn).toEqual("player");
+        expect(game.turn).toEqual("player");
+        return expect(game.illegalTurnError).toHaveBeenCalled();
+      });
+      it("should raise an error and not allow the player to choose unless it is the player's turn", function() {
+        game.turn = "computer";
+        spyOn(game, 'illegalTurnError');
+        game.playerMove(1);
+        return expect(game.illegalTurnError).toHaveBeenCalled();
+      });
+      return it("should raise and error and not allow the computer to choose unless it is the computer's turn", function() {
+        spyOn(game, 'illegalTurnError');
+        spyOn(game, 'computerLogic').andReturn(2);
+        game.computerMove();
+        return expect(game.illegalTurnError).toHaveBeenCalled();
       });
     });
   });
