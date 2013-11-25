@@ -4,12 +4,12 @@ describe "Game", ->
     player = new Player
     game = new Game(player)
 
-  describe "New Game", ->
+  describe "Rules for a New Game", ->
     it "board should be blank when game starts", ->
       for position in game.board
        expect(position is " ").toBeTruthy()
 
-  describe "Taking a turn", ->
+  describe "Rules for taking a turn", ->
     beforeEach ->
       game.playerMove(1)
       spyOn(game, 'computerLogic').andReturn(2)
@@ -29,7 +29,7 @@ describe "Game", ->
       expect(game.checkLocation(1)).toEqual("X")
       expect(game.illegalTurnError.calls.length).toEqual(2)
 
-  describe "alternating turns", ->
+  describe "Rules fo alternating turns", ->
 
     it "turn should initialize to the player", -> 
       expect(game.turn).toEqual("player")
@@ -64,3 +64,36 @@ describe "Game", ->
       spyOn(game, 'computerLogic').andReturn(2)
       game.computerMove()
       expect(game.illegalTurnError).toHaveBeenCalled()
+
+  describe "Rules for game is over", ->
+    it "gameOver is false when the game starts", ->
+      expect(game.gameOver).toEqual(false)
+
+    it "gameOver is true when the Player has won", ->
+      spyOn(game, 'playerWin').andReturn(true)
+      game.checkStatus()
+      expect(game.gameOver).toEqual(true)
+
+    it "gameOver is true when the Computer has won", ->
+      spyOn(game, 'computerWin').andReturn(true)
+      game.checkStatus()
+      expect(game.gameOver).toEqual(true)
+
+    it "gameOver is true when the game is a draw", ->
+      spyOn(game, 'isDraw').andReturn(true)
+      game.checkStatus()
+      expect(game.gameOver).toEqual(true)
+
+    it "should not allow the player to move if the game is over", ->
+      spyOn(game, 'gameOverError')
+      game.gameOver = true
+      game.playerMove(1)
+      expect(game.gameOverError).toHaveBeenCalled()
+
+    it "should not allow the computer to move if the game is over", ->
+      spyOn(game, 'gameOverError')
+      game.playerMove(1)
+      game.gameOver = true
+      game.computerMove()
+      expect(game.gameOverError).toHaveBeenCalled()
+

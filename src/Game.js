@@ -7,9 +7,13 @@
       this.player = player;
       this.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
       this.turn = "player";
+      this.gameOver = false;
     }
 
     Game.prototype.playerMove = function(position) {
+      if (this.gameOver) {
+        return this.gameOverError();
+      }
       if (this.checkLocation(position) === " " && this.turn === "player") {
         this.board[position] = "X";
         return this.changeTurn();
@@ -25,6 +29,9 @@
     Game.prototype.computerMove = function() {
       var position;
 
+      if (this.gameOver) {
+        return this.gameOverError();
+      }
       position = this.computerLogic();
       if (this.checkLocation(position) === " " && this.turn === "computer") {
         this.board[position] = "O";
@@ -42,6 +49,22 @@
 
     Game.prototype.raiseError = function(call) {
       return alert(call);
+    };
+
+    Game.prototype.checkStatus = function() {
+      if (this.playerWin() || this.computerWin() || this.isDraw()) {
+        return this.gameOver = true;
+      }
+    };
+
+    Game.prototype.playerWin = function() {};
+
+    Game.prototype.computerWin = function() {};
+
+    Game.prototype.isDraw = function() {};
+
+    Game.prototype.gameOverError = function() {
+      return this.raiseError("Illegal Move: the game is over, no more moves allowed");
     };
 
     Game.prototype.illegalTurnError = function() {
