@@ -5,10 +5,10 @@
 
     player = game = void 0;
     beforeEach(function() {
-      player = new Player;
+      player = new Player("test");
       return game = new Game(player);
     });
-    describe("New Game", function() {
+    describe("Rules for a New Game", function() {
       return it("board should be blank when game starts", function() {
         var position, _i, _len, _ref, _results;
 
@@ -21,7 +21,7 @@
         return _results;
       });
     });
-    describe("Taking a turn", function() {
+    describe("Rules for taking a turn", function() {
       beforeEach(function() {
         game.playerMove(1);
         spyOn(game, 'computerLogic').andReturn(2);
@@ -42,7 +42,7 @@
         return expect(game.illegalTurnError.calls.length).toEqual(2);
       });
     });
-    return describe("alternating turns", function() {
+    describe("Rules fo alternating turns", function() {
       it("turn should initialize to the player", function() {
         return expect(game.turn).toEqual("player");
       });
@@ -76,6 +76,45 @@
         spyOn(game, 'computerLogic').andReturn(2);
         game.computerMove();
         return expect(game.illegalTurnError).toHaveBeenCalled();
+      });
+    });
+    return describe("Rules for game is over", function() {
+      it("gameOver is false when the game starts", function() {
+        return expect(game.gameOver).toEqual(false);
+      });
+      it("gameOver is true and alert is sent when the Player has won", function() {
+        spyOn(game, 'playerWin').andReturn(true);
+        spyOn(game, 'playerWon');
+        game.checkStatus();
+        expect(game.gameOver).toEqual(true);
+        return expect(game.playerWon).toHaveBeenCalled();
+      });
+      it("gameOver is true and alert is sent when the Computer has won", function() {
+        spyOn(game, 'computerWin').andReturn(true);
+        spyOn(game, 'computerWon');
+        game.checkStatus();
+        expect(game.gameOver).toEqual(true);
+        return expect(game.computerWon).toHaveBeenCalled();
+      });
+      it("gameOver is true and alert is sent when the game is a draw", function() {
+        spyOn(game, 'isDraw').andReturn(true);
+        spyOn(game, 'nobodyWon');
+        game.checkStatus();
+        expect(game.gameOver).toEqual(true);
+        return expect(game.nobodyWon).toHaveBeenCalled();
+      });
+      it("Player is not allowed to move if the game is over", function() {
+        spyOn(game, 'gameOverError');
+        game.gameOver = true;
+        game.playerMove(1);
+        return expect(game.gameOverError).toHaveBeenCalled();
+      });
+      return it("Computer is not allowed to move if the game is over", function() {
+        spyOn(game, 'gameOverError');
+        game.playerMove(1);
+        game.gameOver = true;
+        game.computerMove();
+        return expect(game.gameOverError).toHaveBeenCalled();
       });
     });
   });
