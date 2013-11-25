@@ -1,4 +1,4 @@
 class Player
-  constructor: ->
+  constructor: (@name) ->
 
 window.Player = Player
