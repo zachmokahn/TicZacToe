@@ -3,14 +3,14 @@ class Game
   constructor: (@player) ->
   
   playerMove: (position) ->
-    @board[position] = "X"
+    @board[position] = "X" if @checkLocation(position) is " "
 
   checkLocation: (position) ->
     @board[position]
 
   computerMove: ->
-    location = @computerLogic()
-    @board[location] = "O"
+    position = @computerLogic()
+    @board[position] = "O" if @checkLocation(position) is " "
   
   computerLogic: ->
 

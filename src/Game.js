@@ -10,7 +10,9 @@
     }
 
     Game.prototype.playerMove = function(position) {
-      return this.board[position] = "X";
+      if (this.checkLocation(position) === " ") {
+        return this.board[position] = "X";
+      }
     };
 
     Game.prototype.checkLocation = function(position) {
@@ -18,10 +20,12 @@
     };
 
     Game.prototype.computerMove = function() {
-      var location;
+      var position;
 
-      location = this.computerLogic();
-      return this.board[location] = "O";
+      position = this.computerLogic();
+      if (this.checkLocation(position) === " ") {
+        return this.board[position] = "O";
+      }
     };
 
     Game.prototype.computerLogic = function() {};

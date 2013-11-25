@@ -13,11 +13,18 @@ describe "Game", ->
     
     beforeEach ->
       game.playerMove(1)
-    
-    it "should change position to 'x' when first player selects a board location", ->
-      expect(game.checkLocation(1)).toEqual("X")
-
-    it "should change position to 'o' when computer selects a board location", ->
       spyOn(game, 'computerLogic').andReturn(2)
       game.computerMove()
+    
+    it "position should change to 'x' when first player selects a board location", ->
+      expect(game.checkLocation(1)).toEqual("X")
+
+    it "position should change to 'o' when computer selects a board location", ->
       expect(game.checkLocation(2)).toEqual("O")
+
+    it "position should not change if it is already filled on the board", ->
+      game.playerMove(2)
+      expect(game.checkLocation(2)).toEqual("O")
+      game.computerLogic.andReturn(1)
+      game.computerMove()
+      expect(game.checkLocation(1)).toEqual("X")

@@ -23,15 +23,22 @@
     });
     return describe("Taking a turn", function() {
       beforeEach(function() {
-        return game.playerMove(1);
+        game.playerMove(1);
+        spyOn(game, 'computerLogic').andReturn(2);
+        return game.computerMove();
       });
-      it("should change position to 'x' when first player selects a board location", function() {
+      it("position should change to 'x' when first player selects a board location", function() {
         return expect(game.checkLocation(1)).toEqual("X");
       });
-      return it("should change position to 'o' when computer selects a board location", function() {
-        spyOn(game, 'computerLogic').andReturn(2);
-        game.computerMove();
+      it("position should change to 'o' when computer selects a board location", function() {
         return expect(game.checkLocation(2)).toEqual("O");
+      });
+      return it("position should not change if it is already filled on the board", function() {
+        game.playerMove(2);
+        expect(game.checkLocation(2)).toEqual("O");
+        game.computerLogic.andReturn(1);
+        game.computerMove();
+        return expect(game.checkLocation(1)).toEqual("X");
       });
     });
   });
