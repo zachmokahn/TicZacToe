@@ -8,4 +8,10 @@ class Game
   checkLocation: (position) ->
     @board[position]
 
-window.Game = Game 
+  computerMove: ->
+    location = @computerLogic()
+    @board[location] = "O"
+  
+  computerLogic: ->
+
+window.Game = Game

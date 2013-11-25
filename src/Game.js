@@ -17,6 +17,15 @@
       return this.board[position];
     };
 
+    Game.prototype.computerMove = function() {
+      var location;
+
+      location = this.computerLogic();
+      return this.board[location] = "O";
+    };
+
+    Game.prototype.computerLogic = function() {};
+
     return Game;
 
   })();
