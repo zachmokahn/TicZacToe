@@ -42,7 +42,7 @@
         return expect(game.illegalTurnError.calls.length).toEqual(2);
       });
     });
-    describe("Rules fo alternating turns", function() {
+    describe("Rules for alternating turns", function() {
       it("turn should initialize to the player", function() {
         return expect(game.turn).toEqual("player");
       });
