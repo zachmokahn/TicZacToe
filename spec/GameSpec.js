@@ -64,6 +64,54 @@
         return expect(game.illegalTurnError.calls.length).toEqual(2);
       });
     });
+    describe("Computer Logic", function() {
+      it("should take the winning move if present", function() {
+        game.board[0] = "X";
+        game.board[1] = "O";
+        game.board[2] = "X";
+        game.board[4] = "O";
+        game.board[3] = "X";
+        return expect(game.computerLogic()).toEqual(7);
+      });
+      it("should take the blocking move if present and can't win", function() {
+        game.board[0] = "X";
+        game.board[4] = "O";
+        game.board[3] = "X";
+        return expect(game.computerLogic()).toEqual(6);
+      });
+      it("should take a wall if double threat present", function() {
+        game.board[0] = "X";
+        game.board[4] = "O";
+        game.board[8] = "X";
+        return expect(game.computerLogic()).toEqual(1);
+      });
+      it("should take the center if not taken on first move", function() {
+        game.playerMove(1);
+        return expect(game.computerLogic()).toEqual(4);
+      });
+      it("should take an opposite corner if no center is availabe", function() {
+        game.board[0] = "X";
+        game.board[4] = "O";
+        game.board[5] = "X";
+        return expect(game.computerLogic()).toEqual(8);
+      });
+      it("should play any corner", function() {
+        game.board[3] = "X";
+        game.board[4] = "O";
+        game.board[5] = "X";
+        return expect(game.computerLogic()).toEqual(0);
+      });
+      return it("should play any wall if it can't play any corner", function() {
+        game.board[4] = "X";
+        game.board[0] = "O";
+        game.board[8] = "X";
+        game.board[6] = "O";
+        game.board[2] = "X";
+        game.board[5] = "O";
+        game.board[3] = "X";
+        return expect(game.computerLogic()).toEqual(1);
+      });
+    });
     describe("Rules for alternating turns", function() {
       it("turn should initialize to the player", function() {
         return expect(game.turn).toEqual("player");

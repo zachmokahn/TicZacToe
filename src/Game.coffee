@@ -6,6 +6,7 @@ class Game
       @computerToken = "O"
     else
       @computerToken = "X"
+    @ai = new Computer(@computerToken, @playerToken)
 
   playerMove: (position) ->
     return @gameOverError() if @gameOver
@@ -31,6 +32,7 @@ class Game
     @turn = if @turn is "player" then "computer" else "player"
 
   computerLogic: ->
+    @ai.gameLogic(@board)[0]
 
   raiseError: (call) ->
     alert(call)

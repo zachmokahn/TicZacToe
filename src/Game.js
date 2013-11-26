@@ -14,6 +14,7 @@
       } else {
         this.computerToken = "X";
       }
+      this.ai = new Computer(this.computerToken, this.playerToken);
     }
 
     Game.prototype.playerMove = function(position) {
@@ -51,7 +52,9 @@
       return this.turn = this.turn === "player" ? "computer" : "player";
     };
 
-    Game.prototype.computerLogic = function() {};
+    Game.prototype.computerLogic = function() {
+      return this.ai.gameLogic(this.board)[0];
+    };
 
     Game.prototype.raiseError = function(call) {
       return alert(call);

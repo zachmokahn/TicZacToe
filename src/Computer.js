@@ -83,7 +83,28 @@
     };
 
     Computer.prototype.blockDoubleThreatLocation = function() {
-      return this.checkSpaces(this.wallSpots, " ");
+      if (this.doubleThreatPresent()) {
+        return this.checkSpaces(this.wallSpots, " ");
+      }
+    };
+
+    Computer.prototype.doubleThreatPresent = function() {
+      var corners, doubleThreat, spot;
+
+      corners = this.checkSpaces([0, 2], this.playerToken);
+      doubleThreat = this.checkSpaces((function() {
+        var _i, _len, _results;
+
+        _results = [];
+        for (_i = 0, _len = corners.length; _i < _len; _i++) {
+          spot = corners[_i];
+          _results.push(this.oppositeSpots[spot]);
+        }
+        return _results;
+      }).call(this), this.playerToken);
+      if (doubleThreat.length > 0) {
+        return true;
+      }
     };
 
     Computer.prototype.playCenterLocation = function() {
@@ -93,7 +114,9 @@
     };
 
     Computer.prototype.playOppositeCornerLocation = function() {
-      return this.getUnoccupiedOpposites(this.checkSpaces(this.cornerSpots, "X"));
+      if (this.getUnoccupiedOpposites(this.checkSpaces(this.cornerSpots, this.playerToken)).length > 0) {
+        return this.getUnoccupiedOpposites(this.checkSpaces(this.cornerSpots, this.playerToken));
+      }
     };
 
     Computer.prototype.getUnoccupiedOpposites = function(coordinates) {

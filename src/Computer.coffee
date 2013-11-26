@@ -27,7 +27,6 @@ class Computer
     return @check(symbol, @rows) if @check(symbol, @rows)
     return @check(symbol, @columns) if @check(symbol, @columns)
     return @check(symbol, @diagonals) if @check(symbol, @diagonals)
-
   check: (symbol, values)  ->
     for value in values
       return @checkWin(symbol, value) if @checkWin(symbol, value)
@@ -36,13 +35,18 @@ class Computer
     @checkSpaces(list, " ") if @checkSpaces(list, symbol).length is 2 and @checkSpaces(list, " ").length is 1
 
   blockDoubleThreatLocation: ->
-    @checkSpaces(@wallSpots, " ")
+    @checkSpaces(@wallSpots, " ") if @doubleThreatPresent()
+
+  doubleThreatPresent: ->
+    corners = @checkSpaces([0,2], @playerToken)
+    doubleThreat = @checkSpaces((@oppositeSpots[spot] for spot in corners), @playerToken)
+    return true if doubleThreat.length > 0
 
   playCenterLocation: ->
     @checkSpaces([4], " ") if @checkSpaces([4], " ").length > 0
 
   playOppositeCornerLocation: ->
-    @getUnoccupiedOpposites(@checkSpaces(@cornerSpots, "X"))
+    @getUnoccupiedOpposites(@checkSpaces(@cornerSpots, @playerToken)) if @getUnoccupiedOpposites(@checkSpaces(@cornerSpots, @playerToken)).length > 0
 
   getUnoccupiedOpposites: (coordinates) ->
     @checkSpaces((@oppositeSpots[spot] for spot in coordinates), " ")
