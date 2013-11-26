@@ -1,24 +1,29 @@
 class Game
   constructor: (@player) ->
-    @board = [" "," "," "," "," "," "," "," "," "]
+    @board = [[" "," "," "],[" "," "," "],[" "," "," "]]
     @turn = "player"
     @gameOver = false
-  playerMove: (position) ->
+  
+  playerMove: (row,index) ->
     return @gameOverError() if @gameOver
-    if @checkLocation(position) is " " && @turn is "player"
-      @board[position] = "X"
+    if @checkLocation(row,index) is " " && @turn is "player"
+      row = @board[row]
+      row[index] = "X"
       @changeTurn()
     else
       @illegalTurnError()
 
-  checkLocation: (position) ->
-    @board[position]
+  checkLocation: (row,index) ->
+    row = @board[row]
+    row[index]
 
   computerMove: ->
     return @gameOverError() if @gameOver
-    position = @computerLogic()
-    if @checkLocation(position) is " " && @turn is "computer"
-      @board[position] = "O"
+    location = @computerLogic()
+    row = location[0]
+    index = location[1]
+    if @checkLocation(row,index) is " " && @turn is "computer"
+      @board[row][index] = "O"
       @changeTurn()
     else
       @illegalTurnError()

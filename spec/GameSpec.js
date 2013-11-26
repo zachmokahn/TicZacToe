@@ -10,35 +10,44 @@
     });
     describe("Rules for a New Game", function() {
       return it("board should be blank when game starts", function() {
-        var position, _i, _len, _ref, _results;
+        var array, position, _i, _len, _ref, _results;
 
         _ref = game.board;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          position = _ref[_i];
-          _results.push(expect(position === " ").toBeTruthy());
+          array = _ref[_i];
+          _results.push((function() {
+            var _j, _len1, _results1;
+
+            _results1 = [];
+            for (_j = 0, _len1 = array.length; _j < _len1; _j++) {
+              position = array[_j];
+              _results1.push(expect(position === " ").toBeTruthy());
+            }
+            return _results1;
+          })());
         }
         return _results;
       });
     });
     describe("Rules for taking a turn", function() {
       beforeEach(function() {
-        game.playerMove(1);
-        spyOn(game, 'computerLogic').andReturn(2);
+        game.playerMove(1, 1);
+        spyOn(game, 'computerLogic').andReturn([2, 2]);
         return game.computerMove();
       });
       it("position should change to 'x' when first player selects a board location", function() {
-        return expect(game.checkLocation(1)).toEqual("X");
+        return expect(game.checkLocation(1, 1)).toEqual("X");
       });
       it("position should change to 'o' when computer selects a board location", function() {
-        return expect(game.checkLocation(2)).toEqual("O");
+        return expect(game.checkLocation(2, 2)).toEqual("O");
       });
       return it("position should not change and error should be raised if it is already filled on the board", function() {
         spyOn(game, 'illegalTurnError');
-        game.playerMove(2);
-        expect(game.checkLocation(2)).toEqual("O");
+        game.playerMove(2, 2);
+        expect(game.checkLocation(2, 2)).toEqual("O");
         game.computerMove();
-        expect(game.checkLocation(1)).toEqual("X");
+        expect(game.checkLocation(1, 1)).toEqual("X");
         return expect(game.illegalTurnError.calls.length).toEqual(2);
       });
     });
@@ -47,33 +56,33 @@
         return expect(game.turn).toEqual("player");
       });
       it("turn should change to the computer after the 'user' plays", function() {
-        game.playerMove(1);
+        game.playerMove(1, 1);
         return expect(game.turn).toEqual("computer");
       });
       it("turn should change to the 'users' after the computer plays", function() {
-        game.playerMove(1);
-        spyOn(game, 'computerLogic').andReturn(2);
+        game.playerMove(1, 1);
+        spyOn(game, 'computerLogic').andReturn([2, 2]);
         game.computerMove();
         return expect(game.turn).toEqual("player");
       });
       it("turn should not change and error should be raised if the 'user' makes an illegal move", function() {
         spyOn(game, 'illegalTurnError');
-        spyOn(game, 'computerLogic').andReturn(2);
-        game.playerMove(1);
+        spyOn(game, 'computerLogic').andReturn([2, 2]);
+        game.playerMove(1, 1);
         game.computerMove();
-        game.playerMove(2);
+        game.playerMove(2, 2);
         expect(game.turn).toEqual("player");
         return expect(game.illegalTurnError).toHaveBeenCalled();
       });
       it("should raise an error and not allow the player to choose unless it is the player's turn", function() {
         game.turn = "computer";
         spyOn(game, 'illegalTurnError');
-        game.playerMove(1);
+        game.playerMove(1, 1);
         return expect(game.illegalTurnError).toHaveBeenCalled();
       });
       return it("should raise and error and not allow the computer to choose unless it is the computer's turn", function() {
         spyOn(game, 'illegalTurnError');
-        spyOn(game, 'computerLogic').andReturn(2);
+        spyOn(game, 'computerLogic').andReturn([2, 2]);
         game.computerMove();
         return expect(game.illegalTurnError).toHaveBeenCalled();
       });
@@ -106,12 +115,12 @@
       it("Player is not allowed to move if the game is over", function() {
         spyOn(game, 'gameOverError');
         game.gameOver = true;
-        game.playerMove(1);
+        game.playerMove(1, 1);
         return expect(game.gameOverError).toHaveBeenCalled();
       });
       return it("Computer is not allowed to move if the game is over", function() {
         spyOn(game, 'gameOverError');
-        game.playerMove(1);
+        game.playerMove(1, 1);
         game.gameOver = true;
         game.computerMove();
         return expect(game.gameOverError).toHaveBeenCalled();

@@ -5,36 +5,40 @@
   Game = (function() {
     function Game(player) {
       this.player = player;
-      this.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
+      this.board = [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]];
       this.turn = "player";
       this.gameOver = false;
     }
 
-    Game.prototype.playerMove = function(position) {
+    Game.prototype.playerMove = function(row, index) {
       if (this.gameOver) {
         return this.gameOverError();
       }
-      if (this.checkLocation(position) === " " && this.turn === "player") {
-        this.board[position] = "X";
+      if (this.checkLocation(row, index) === " " && this.turn === "player") {
+        row = this.board[row];
+        row[index] = "X";
         return this.changeTurn();
       } else {
         return this.illegalTurnError();
       }
     };
 
-    Game.prototype.checkLocation = function(position) {
-      return this.board[position];
+    Game.prototype.checkLocation = function(row, index) {
+      row = this.board[row];
+      return row[index];
     };
 
     Game.prototype.computerMove = function() {
-      var position;
+      var index, location, row;
 
       if (this.gameOver) {
         return this.gameOverError();
       }
-      position = this.computerLogic();
-      if (this.checkLocation(position) === " " && this.turn === "computer") {
-        this.board[position] = "O";
+      location = this.computerLogic();
+      row = location[0];
+      index = location[1];
+      if (this.checkLocation(row, index) === " " && this.turn === "computer") {
+        this.board[row][index] = "O";
         return this.changeTurn();
       } else {
         return this.illegalTurnError();
