@@ -1,3 +1,4 @@
 ###TicTacToe
+#####by ZachmoKahn
 
-####TODO: Update this readme
+All of the backend logic is complete, all that's left is to integrate some views
