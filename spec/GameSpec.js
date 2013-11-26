@@ -9,7 +9,7 @@
       return game = new Game(player);
     });
     describe("Rules for a New Game", function() {
-      return it("board should be blank when game starts", function() {
+      it("board should be blank when game starts", function() {
         var position, _i, _len, _ref, _results;
 
         _ref = game.board;
@@ -19,6 +19,28 @@
           _results.push(expect(position === " ").toBeTruthy());
         }
         return _results;
+      });
+      it("should default Player's symbol to 'X", function() {
+        return expect(game.playerToken).toEqual("X");
+      });
+      it("should default Computer's symbol to 'O'", function() {
+        return expect(game.computerToken).toEqual("O");
+      });
+      it("should default First Turn to 'player'", function() {
+        return expect(game.turn).toEqual("player");
+      });
+      it("should allow player and computer symbols to be swapped", function() {
+        var newGame;
+
+        newGame = new Game(player, "player", "O");
+        expect(newGame.playerToken).toEqual("O");
+        return expect(newGame.computerToken).toEqual("X");
+      });
+      return it("should all computer to have the first turn", function() {
+        var newGame;
+
+        newGame = new Game(player, "computer");
+        return expect(newGame.turn).toEqual("computer");
       });
     });
     describe("Rules for taking a turn", function() {

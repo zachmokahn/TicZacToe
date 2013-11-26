@@ -8,6 +8,19 @@ describe "Game", ->
     it "board should be blank when game starts", ->
       for position in game.board
        expect(position is " ").toBeTruthy()
+    it "should default Player's symbol to 'X", ->
+      expect(game.playerToken).toEqual("X")
+    it "should default Computer's symbol to 'O'", ->
+      expect(game.computerToken).toEqual("O")
+    it "should default First Turn to 'player'", ->
+      expect(game.turn).toEqual("player")
+    it "should allow player and computer symbols to be swapped", ->
+      newGame = new Game(player, "player", "O")
+      expect(newGame.playerToken).toEqual("O")
+      expect(newGame.computerToken).toEqual("X")
+    it "should all computer to have the first turn", ->
+      newGame = new Game(player, "computer")
+      expect(newGame.turn).toEqual("computer")
 
   describe "Rules for taking a turn", ->
     beforeEach ->
