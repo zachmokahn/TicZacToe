@@ -2,59 +2,37 @@ describe "AI algorithm", ->
   ai = undefined
   beforeEach ->
     ai = new Computer
-    spyOn(ai, 'canWin').andReturn(false)
-    spyOn(ai, 'canBlock').andReturn(false)
-    spyOn(ai, 'canDoubleThreat').andReturn(false)
-    spyOn(ai, 'canBlockDoubleThreat').andReturn(false)
-    spyOn(ai, 'canPlayCenter').andReturn(false)
-    spyOn(ai, 'canPlayOppositeCorner').andReturn(false)
-    spyOn(ai, 'willPlayAnyCorner').andReturn(false)
-    spyOn(ai, 'willPlayWall').andReturn(true)
-    spyOn(ai, 'playWallLocation')
-
+    spyOn(ai, 'winningLocation').andReturn(false)
+    spyOn(ai, 'blockLocation').andReturn(false)
+    spyOn(ai, 'blockDoubleThreatLocation').andReturn(false)
+    spyOn(ai, 'playCenterLocation').andReturn(false)
+    spyOn(ai, 'playOppositeCornerLocation').andReturn(false)
+    spyOn(ai, 'playAnyCornerLocation').andReturn(false)
+    spyOn(ai, 'playWallLocation').andReturn(false)
   it "plays the winning move if it can win", ->
-    ai.canWin.andReturn(true)
-    spyOn(ai, 'winningLocation')
+    ai.winningLocation.andReturn(true)
     ai.gameLogic()
     expect(ai.winningLocation).toHaveBeenCalled()
-
   it "blocks the player if a winning move cannot be played", ->
-    ai.canBlock.andReturn(true)
-    spyOn(ai, 'blockLocation')
+    ai.blockLocation.andReturn(true)
     ai.gameLogic()
     expect(ai.blockLocation).toHaveBeenCalled()
-
-  it "creates a double threat if the player has nothing to be blocked", ->
-    ai.canDoubleThreat.andReturn(true)
-    spyOn(ai, 'doubleThreatLocation')
-    ai.gameLogic()
-    expect(ai.doubleThreatLocation).toHaveBeenCalled()
-
   it "blocks a double threat opportunity if the computer cannot create a double threat", ->
-    ai.canBlockDoubleThreat.andReturn(true)
-    spyOn(ai, 'blockDoubleThreatLocation')
+    ai.blockDoubleThreatLocation.andReturn(true)
     ai.gameLogic()
     expect(ai.blockDoubleThreatLocation).toHaveBeenCalled()
-
   it "plays the center space if there is no threat of double threat", ->
-    ai.canPlayCenter.andReturn(true)
-    spyOn(ai, 'playCenterLocation')
+    ai.playCenterLocation.andReturn(true)
     ai.gameLogic()
     expect(ai.playCenterLocation).toHaveBeenCalled()
-
   it "plays the opposite corner from the player if the center is taken", ->
-    ai.canPlayOppositeCorner.andReturn(true)
-    spyOn(ai, 'playOppositeCornerLocation')
+    ai.playOppositeCornerLocation.andReturn(true)
     ai.gameLogic()
     expect(ai.playOppositeCornerLocation).toHaveBeenCalled()
-
   it "plays any corner if the player has not take a corner", ->
-    ai.willPlayAnyCorner.andReturn(true)
-    spyOn(ai, 'playAnyCornerLocation')
+    ai.playAnyCornerLocation.andReturn(true)
     ai.gameLogic()
     expect(ai.playAnyCornerLocation).toHaveBeenCalled()
-
-
   it "plays a wall spot if no corners are available", ->
     ai.gameLogic()
     expect(ai.playWallLocation).toHaveBeenCalled()
