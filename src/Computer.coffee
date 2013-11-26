@@ -1,44 +1,59 @@
 class Computer
-  gameLogic: (@board) ->
-    return @winningLocation() if @canWin()
-    return @blockLocation() if @canBlock()
-    return @doubleThreatLocation() if @canDoubleThreat()
-    return @blockDoubleThreatLocation() if @canBlockDoubleThreat()
-    return @playCenterLocation() if @canPlayCenter()
-    return @playOppositeCornerLocation() if @canPlayOppositeCorner()
-    return @playAnyCornerLocation() if @willPlayAnyCorner()
-    return @playWallLocation() if @willPlayWall()
+  constructor: (@computerToken, @playerToken) ->
 
-  canWin: ->
+  cornerSpots: [0,2,6,8]
+  wallSpots: [1,3,5,7]
+  oppositeSpots: [8,7,6,5,4,3,2,1,0]
+  rows: [[0,1,2],[3,4,5],[6,7,8]]
+  columns: [[0,3,6],[1,4,7],[2,5,8]]
+  diagonals: [[0,4,8],[2,4,6]]
+
+  gameLogic: (@board) ->
+    return @winningLocation() if @winningLocation()
+    return @blockLocation() if @blockLocation()
+    return @blockDoubleThreatLocation() if @blockDoubleThreatLocation()
+    return @playCenterLocation() if @playCenterLocation()
+    return @playOppositeCornerLocation() if @playOppositeCornerLocation()
+    return @playAnyCornerLocation() if @playAnyCornerLocation()
+    return @playWallLocation() if @playWallLocation()
 
   winningLocation: ->
-
-  canBlock: ->
+    @checkForWin(@computerToken)
 
   blockLocation: ->
+    @checkForWin(@playerToken)
 
-  canDoubleThreat: ->
+  checkForWin: (symbol) ->
+    return @check(symbol, @rows) if @check(symbol, @rows)
+    return @check(symbol, @columns) if @check(symbol, @columns)
+    return @check(symbol, @diagonals) if @check(symbol, @diagonals)
 
-  doubleThreatLocation: ->
+  check: (symbol, values)  ->
+    for value in values
+      return @checkWin(symbol, value) if @checkWin(symbol, value)
 
-  canBlockDoubleThreat: ->
+  checkWin: (symbol, list) ->
+    @checkSpaces(list, " ") if @checkSpaces(list, symbol).length is 2 and @checkSpaces(list, " ").length is 1
 
   blockDoubleThreatLocation: ->
-
-  canPlayCenter: ->
+    @checkSpaces(@wallSpots, " ")
 
   playCenterLocation: ->
-
-  canPlayOppositeCorner: ->
+    @checkSpaces([4], " ") if @checkSpaces([4], " ").length > 0
 
   playOppositeCornerLocation: ->
+    @getUnoccupiedOpposites(@checkSpaces(@cornerSpots, "X"))
 
-  willPlayAnyCorner: ->
+  getUnoccupiedOpposites: (coordinates) ->
+    @checkSpaces((@oppositeSpots[spot] for spot in coordinates), " ")
 
   playAnyCornerLocation: ->
-
-  willPlayWall: ->
+    @checkSpaces(@cornerSpots, " ") if @checkSpaces(@cornerSpots, " ").length > 0
 
   playWallLocation: ->
+    @checkSpaces(@wallSpots, " ") if @checkSpaces(@wallSpots, " ").length > 0
+
+  checkSpaces: (coordinates, character) ->
+    spot for spot in coordinates when @board[spot] is character
 
 window.Computer = Computer
