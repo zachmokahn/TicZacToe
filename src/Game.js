@@ -3,11 +3,18 @@
   var Game;
 
   Game = (function() {
-    function Game(player) {
+    function Game(player, turn, playerToken) {
       this.player = player;
+      this.turn = turn != null ? turn : "player";
+      this.playerToken = playerToken != null ? playerToken : "X";
       this.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
-      this.turn = "player";
       this.gameOver = false;
+      if (this.playerToken === "X") {
+        this.computerToken = "O";
+      } else {
+        this.computerToken = "X";
+      }
+      this.ai = new Computer(this.computerToken, this.playerToken);
     }
 
     Game.prototype.playerMove = function(position) {
@@ -15,7 +22,7 @@
         return this.gameOverError();
       }
       if (this.checkLocation(position) === " " && this.turn === "player") {
-        this.board[position] = "X";
+        this.board[position] = this.playerToken;
         return this.changeTurn();
       } else {
         return this.illegalTurnError();
@@ -45,7 +52,9 @@
       return this.turn = this.turn === "player" ? "computer" : "player";
     };
 
-    Game.prototype.computerLogic = function() {};
+    Game.prototype.computerLogic = function() {
+      return this.ai.gameLogic(this.board)[0];
+    };
 
     Game.prototype.raiseError = function(call) {
       return alert(call);

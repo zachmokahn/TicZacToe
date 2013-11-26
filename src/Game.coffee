@@ -1,12 +1,17 @@
 class Game
-  constructor: (@player) ->
+  constructor: (@player, @turn="player", @playerToken="X") ->
     @board = [" "," "," "," "," "," "," "," "," "]
-    @turn = "player"
     @gameOver = false
+    if @playerToken is "X"
+      @computerToken = "O"
+    else
+      @computerToken = "X"
+    @ai = new Computer(@computerToken, @playerToken)
+
   playerMove: (position) ->
     return @gameOverError() if @gameOver
     if @checkLocation(position) is " " && @turn is "player"
-      @board[position] = "X"
+      @board[position] = @playerToken
       @changeTurn()
     else
       @illegalTurnError()
@@ -27,6 +32,7 @@ class Game
     @turn = if @turn is "player" then "computer" else "player"
 
   computerLogic: ->
+    @ai.gameLogic(@board)[0]
 
   raiseError: (call) ->
     alert(call)

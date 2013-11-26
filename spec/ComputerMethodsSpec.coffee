@@ -1,11 +1,11 @@
-describe "AI methods", ->
+describe "Computer", ->
   fullBoard = emptyBoard = ai = undefined
   beforeEach ->
     emptyBoard = [" "," "," "," "," "," "," "," "," "]
     fullBoard = ["X","X","X","X","X","X","X","X","X"]
     ai = new Computer("O","X")
 
-  describe "#play Methods", ->
+  describe "Methods", ->
 
     describe "WallLocation", ->
       beforeEach ->
@@ -136,7 +136,6 @@ describe "AI methods", ->
 
     describe "blockLocation", ->
       beforeEach ->
-        console.log("HERE")
         spyOn(ai, 'winningLocation').andReturn(null)
       it "HORIZONTAL CHECK: it should return [1] if [0,2] are occupied by opponent", ->
         emptyBoard[0] = "X"

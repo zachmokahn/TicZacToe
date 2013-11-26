@@ -8,6 +8,19 @@ describe "Game", ->
     it "board should be blank when game starts", ->
       for position in game.board
        expect(position is " ").toBeTruthy()
+    it "should default Player's symbol to 'X", ->
+      expect(game.playerToken).toEqual("X")
+    it "should default Computer's symbol to 'O'", ->
+      expect(game.computerToken).toEqual("O")
+    it "should default First Turn to 'player'", ->
+      expect(game.turn).toEqual("player")
+    it "should allow player and computer symbols to be swapped", ->
+      newGame = new Game(player, "player", "O")
+      expect(newGame.playerToken).toEqual("O")
+      expect(newGame.computerToken).toEqual("X")
+    it "should all computer to have the first turn", ->
+      newGame = new Game(player, "computer")
+      expect(newGame.turn).toEqual("computer")
 
   describe "Rules for taking a turn", ->
     beforeEach ->
@@ -25,6 +38,53 @@ describe "Game", ->
       game.computerMove()
       expect(game.checkLocation(1)).toEqual("X")
       expect(game.illegalTurnError.calls.length).toEqual(2)
+
+  describe "Computer Logic", ->
+    it "should take the winning move if present", ->
+      game.board[0] = "X"
+      game.board[1] = "O"
+      game.board[2] = "X"
+      game.board[4] = "O"
+      game.board[3] = "X"
+      expect(game.computerLogic()).toEqual(7)
+
+    it "should take the blocking move if present and can't win", ->
+      game.board[0] = "X"
+      game.board[4] = "O"
+      game.board[3] = "X"
+      expect(game.computerLogic()).toEqual(6)
+
+    it "should take a wall if double threat present", ->
+      game.board[0] = "X"
+      game.board[4] = "O"
+      game.board[8] = "X"
+      expect(game.computerLogic()).toEqual(1)
+
+    it "should take the center if not taken on first move", ->
+      game.playerMove(1)
+      expect(game.computerLogic()).toEqual(4)
+
+    it "should take an opposite corner if no center is availabe", ->
+      game.board[0] = "X"
+      game.board[4] = "O"
+      game.board[5] = "X"
+      expect(game.computerLogic()).toEqual(8)
+
+    it "should play any corner", ->
+      game.board[3] = "X"
+      game.board[4] = "O"
+      game.board[5] = "X"
+      expect(game.computerLogic()).toEqual(0)
+
+    it "should play any wall if it can't play any corner", ->
+      game.board[4] = "X"
+      game.board[0] = "O"
+      game.board[8] = "X"
+      game.board[6] = "O"
+      game.board[2] = "X"
+      game.board[5] = "O"
+      game.board[3] = "X"
+      expect(game.computerLogic()).toEqual(1)
 
   describe "Rules for alternating turns", ->
     it "turn should initialize to the player", -> 

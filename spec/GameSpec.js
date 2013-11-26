@@ -9,7 +9,7 @@
       return game = new Game(player);
     });
     describe("Rules for a New Game", function() {
-      return it("board should be blank when game starts", function() {
+      it("board should be blank when game starts", function() {
         var position, _i, _len, _ref, _results;
 
         _ref = game.board;
@@ -19,6 +19,28 @@
           _results.push(expect(position === " ").toBeTruthy());
         }
         return _results;
+      });
+      it("should default Player's symbol to 'X", function() {
+        return expect(game.playerToken).toEqual("X");
+      });
+      it("should default Computer's symbol to 'O'", function() {
+        return expect(game.computerToken).toEqual("O");
+      });
+      it("should default First Turn to 'player'", function() {
+        return expect(game.turn).toEqual("player");
+      });
+      it("should allow player and computer symbols to be swapped", function() {
+        var newGame;
+
+        newGame = new Game(player, "player", "O");
+        expect(newGame.playerToken).toEqual("O");
+        return expect(newGame.computerToken).toEqual("X");
+      });
+      return it("should all computer to have the first turn", function() {
+        var newGame;
+
+        newGame = new Game(player, "computer");
+        return expect(newGame.turn).toEqual("computer");
       });
     });
     describe("Rules for taking a turn", function() {
@@ -40,6 +62,54 @@
         game.computerMove();
         expect(game.checkLocation(1)).toEqual("X");
         return expect(game.illegalTurnError.calls.length).toEqual(2);
+      });
+    });
+    describe("Computer Logic", function() {
+      it("should take the winning move if present", function() {
+        game.board[0] = "X";
+        game.board[1] = "O";
+        game.board[2] = "X";
+        game.board[4] = "O";
+        game.board[3] = "X";
+        return expect(game.computerLogic()).toEqual(7);
+      });
+      it("should take the blocking move if present and can't win", function() {
+        game.board[0] = "X";
+        game.board[4] = "O";
+        game.board[3] = "X";
+        return expect(game.computerLogic()).toEqual(6);
+      });
+      it("should take a wall if double threat present", function() {
+        game.board[0] = "X";
+        game.board[4] = "O";
+        game.board[8] = "X";
+        return expect(game.computerLogic()).toEqual(1);
+      });
+      it("should take the center if not taken on first move", function() {
+        game.playerMove(1);
+        return expect(game.computerLogic()).toEqual(4);
+      });
+      it("should take an opposite corner if no center is availabe", function() {
+        game.board[0] = "X";
+        game.board[4] = "O";
+        game.board[5] = "X";
+        return expect(game.computerLogic()).toEqual(8);
+      });
+      it("should play any corner", function() {
+        game.board[3] = "X";
+        game.board[4] = "O";
+        game.board[5] = "X";
+        return expect(game.computerLogic()).toEqual(0);
+      });
+      return it("should play any wall if it can't play any corner", function() {
+        game.board[4] = "X";
+        game.board[0] = "O";
+        game.board[8] = "X";
+        game.board[6] = "O";
+        game.board[2] = "X";
+        game.board[5] = "O";
+        game.board[3] = "X";
+        return expect(game.computerLogic()).toEqual(1);
       });
     });
     describe("Rules for alternating turns", function() {
