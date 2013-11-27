@@ -1,0 +1,29 @@
+*{
+  padding: 0px;
+  margin: 0px;
+}
+#container{
+  text-align: center;
+  width: 100%;
+}
+.row{
+  display: inline-block;
+  width: 75%;
+  margin-top: -8px;
+}
+.boardPiece{
+  text-align: center;
+  display: inline-block;
+  height: 150px;
+  width: 30%;
+  border: solid black 1px;
+}
+
+.cross{
+  background-color:yellow;
+}
+
+.circle{
+  background-color: blue;
+}
+
