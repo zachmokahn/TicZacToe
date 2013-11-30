@@ -14,21 +14,39 @@
     <link rel="stylesheet" href="css/myStyles.css">
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/main.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="js/vendor/modernizr-2.6.2.min.js"></script>
     <script type="text/javascript" src="src/Player.js"></script>
     <script type="text/javascript" src="src/Game.js"></script>
     <script type="text/javascript" src="src/Computer.js"></script>
-    <script type="test/javascript" src="src/Gameplay.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
+    <script type="text/javascript" src="src/NewGame.js"></script>
     <script src="js/plugins.js"></script>
     <script src="js/main.js"></script>
 </head>
 <body>
-            <p>Hello world! Welcome to tic-tac-toe.</p>
+  <div id="heading">
+    <div id="name">
+    <input type='text' id='playerName' placeholder='player1'></input>
+  </div>
+    <div id="move">
+    <select id="firstMove">
+              <option value="player">Player</option>
+              <option value="computer">Computer</option>
+            </select>
+          </div>
+          <div id="piece">
+            <select id="playerPiece">
+              <option value="X">X</option>
+              <option value="O">O</option>
+            </select>
+          </div>
+          <div id="new">
+            <button type='button' id='newGame'>Start a New Game</button>            
+          </div>
+        </div>
 <div id="container">
- <div class="row"><div class="boardPiece cross" id="0">  </div><div class="boardPiece" id="1"></div><div class="boardPiece" id="2"></div></div>
- <div class="row"><div class="boardPiece" id="3">  </div><div class="boardPiece" id="4"></div><div class="boardPiece" id="5"></div></div>
- <div class="row"><div class="boardPiece" id="6">  </div><div class="boardPiece circle" id="7"></div><div class="boardPiece" id="8"></div></div></div>
+ <div class="row"><div class="boardPiece" id="space0">  </div><div class="boardPiece" id="space1"></div><div class="boardPiece" id="space2"></div></div>
+ <div class="row"><div class="boardPiece" id="space3">  </div><div class="boardPiece" id="space4"></div><div class="boardPiece" id="space5"></div></div>
+ <div class="row"><div class="boardPiece" id="space6">  </div><div class="boardPiece" id="space7"></div><div class="boardPiece" id="space8"></div></div></div>
         </body>
         </html>

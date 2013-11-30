@@ -3,7 +3,37 @@
   margin: 0px;
 }
 
+#heading{
+  display: inline;
+  text-align: center;
+}
+
+#name{
+  margin-top: 10px;
+  float: left;
+  width: 24%;
+}
+
+#move{
+  margin-top: 10px;
+  float: left;
+  width: 24%;
+}
+
+#piece{
+  margin-top: 10px;
+  float: left;
+  width: 24%;
+}
+
+#new{
+  margin-top: 10px;
+  float: left;
+  width: 24%;
+}
+
 #container{
+  padding-top: 50px;
   text-align: center;
   width: 100%;
 }

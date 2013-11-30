@@ -57,7 +57,7 @@ class Computer
   playWallLocation: ->
     @checkSpaces(@wallSpots, " ") if @checkSpaces(@wallSpots, " ").length > 0
 
-  checkSpaces: (coordinates, character) ->
-    spot for spot in coordinates when @board[spot] is character
+  checkSpaces: (coordinates, character, board=@board) ->
+    spot for spot in coordinates when board[spot] is character
 
 window.Computer = Computer
