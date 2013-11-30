@@ -146,13 +146,16 @@
       }
     };
 
-    Computer.prototype.checkSpaces = function(coordinates, character) {
+    Computer.prototype.checkSpaces = function(coordinates, character, board) {
       var spot, _i, _len, _results;
 
+      if (board == null) {
+        board = this.board;
+      }
       _results = [];
       for (_i = 0, _len = coordinates.length; _i < _len; _i++) {
         spot = coordinates[_i];
-        if (this.board[spot] === character) {
+        if (board[spot] === character) {
           _results.push(spot);
         }
       }

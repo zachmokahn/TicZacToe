@@ -11,36 +11,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-
+    <link rel="stylesheet" href="css/myStyles.css">
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/main.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="js/vendor/modernizr-2.6.2.min.js"></script>
     <script type="text/javascript" src="src/Player.js"></script>
     <script type="text/javascript" src="src/Game.js"></script>
     <script type="text/javascript" src="src/Computer.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
+    <script type="text/javascript" src="src/NewGame.js"></script>
     <script src="js/plugins.js"></script>
     <script src="js/main.js"></script>
 </head>
 <body>
-        <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-            <![endif]-->
-
-            <!-- Add your site or application content here -->
-            <p>Hello world! This is HTML5 Boilerplate.</p>
-
-
-
-            <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-            <script>
-            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-                function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-            e.src='//www.google-analytics.com/analytics.js';
-            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-            ga('create','UA-XXXXX-X');ga('send','pageview');
-            </script>
+  <div id="heading">
+    <div id="name">
+    <input type='text' id='playerName' placeholder='player1'></input>
+  </div>
+    <div id="move">
+    <select id="firstMove">
+              <option value="player">Player</option>
+              <option value="computer">Computer</option>
+            </select>
+          </div>
+          <div id="piece">
+            <select id="playerPiece">
+              <option value="X">X</option>
+              <option value="O">O</option>
+            </select>
+          </div>
+          <div id="new">
+            <button type='button' id='newGame'>Start a New Game</button>            
+          </div>
+        </div>
+<div id="container">
+ <div class="row"><div class="boardPiece" id="space0">  </div><div class="boardPiece" id="space1"></div><div class="boardPiece" id="space2"></div></div>
+ <div class="row"><div class="boardPiece" id="space3">  </div><div class="boardPiece" id="space4"></div><div class="boardPiece" id="space5"></div></div>
+ <div class="row"><div class="boardPiece" id="space6">  </div><div class="boardPiece" id="space7"></div><div class="boardPiece" id="space8"></div></div></div>
         </body>
         </html>

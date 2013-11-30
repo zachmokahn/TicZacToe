@@ -4,9 +4,10 @@
 
   Game = (function() {
     function Game(player, turn, playerToken) {
-      this.player = player;
+      this.player = player != null ? player : "player1";
       this.turn = turn != null ? turn : "player";
       this.playerToken = playerToken != null ? playerToken : "X";
+      this.moveCount = 0;
       this.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
       this.gameOver = false;
       if (this.playerToken === "X") {
@@ -18,14 +19,17 @@
     }
 
     Game.prototype.playerMove = function(position) {
-      if (this.gameOver) {
-        return this.gameOverError();
-      }
       if (this.checkLocation(position) === " " && this.turn === "player") {
+        this.moveCount++;
         this.board[position] = this.playerToken;
+        if (this.checkIfWon(this.playerToken)) {
+          this.playerWon();
+          this.gameOver = true;
+        }
+        if (this.moveCount === 9) {
+          return this.nobodyWon();
+        }
         return this.changeTurn();
-      } else {
-        return this.illegalTurnError();
       }
     };
 
@@ -36,15 +40,18 @@
     Game.prototype.computerMove = function() {
       var position;
 
-      if (this.gameOver) {
-        return this.gameOverError();
-      }
       position = this.computerLogic();
       if (this.checkLocation(position) === " " && this.turn === "computer") {
-        this.board[position] = "O";
+        this.moveCount++;
+        this.board[position] = this.computerToken;
+        if (this.checkIfWon(this.computerToken)) {
+          this.computerWon();
+          this.gameOver = true;
+        }
+        if (this.moveCount === 9) {
+          return this.nobodyWon();
+        }
         return this.changeTurn();
-      } else {
-        return this.illegalTurnError();
       }
     };
 
@@ -56,55 +63,36 @@
       return this.ai.gameLogic(this.board)[0];
     };
 
-    Game.prototype.raiseError = function(call) {
-      return alert(call);
-    };
-
-    Game.prototype.checkStatus = function() {
-      if (this.playerWin() || this.computerWin() || this.isDraw()) {
-        this.gameOver = true;
-      }
-      if (this.gameOver) {
-        if (this.playerWin()) {
-          return this.playerWon();
-        }
-        if (this.computerWin()) {
-          return this.computerWon();
-        }
-        if (this.isDraw()) {
-          return this.nobodyWon();
-        }
-      }
-    };
-
     Game.prototype.winnerAlert = function(who) {
       return alert("" + who + " has won this round");
     };
 
-    Game.prototype.playerWin = function() {};
+    Game.prototype.checkIfWon = function(token) {
+      var combos, _i, _len, _ref;
+
+      _ref = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        combos = _ref[_i];
+        if (this.ai.checkSpaces(combos, token, this.board).length === 3) {
+          return true;
+        }
+      }
+      if (this.moveCount === 9) {
+        this.gameOver = true;
+      }
+      return false;
+    };
 
     Game.prototype.playerWon = function() {
       return this.winnerAlert(this.player.name);
     };
 
-    Game.prototype.computerWin = function() {};
-
     Game.prototype.computerWon = function() {
       return this.winnerAlert("computer");
     };
 
-    Game.prototype.isDraw = function() {};
-
     Game.prototype.nobodyWon = function() {
       return this.winnerAlert("DRAW: nobody");
-    };
-
-    Game.prototype.gameOverError = function() {
-      return this.raiseError("Illegal Move: the game is over, no more moves allowed");
-    };
-
-    Game.prototype.illegalTurnError = function() {
-      return this.raiseError("Illegal Move: move taken out of turn");
     };
 
     return Game;
