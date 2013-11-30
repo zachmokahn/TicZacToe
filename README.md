@@ -1,7 +1,7 @@
-###TicTacToe
+###[TicTacToe](http://zacharyjdavy.com/ttt)
 #####by ZachmoKahn
 
-All of the backend logic is complete, all that's left is to integrate some views
+You can play it now, I will be updating this to show you how I went about testing
 
 
 
