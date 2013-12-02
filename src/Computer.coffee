@@ -34,14 +34,27 @@ class Computer
   checkWin: (symbol, list) ->
     @checkSpaces(list, " ") if @checkSpaces(list, symbol).length is 2 and @checkSpaces(list, " ").length is 1
 
-  blockDoubleThreatLocation: ->
-    @checkSpaces(@wallSpots, " ") if @doubleThreatPresent()
+    
 
-  doubleThreatPresent: ->
+  blockDoubleThreatLocation: ->
+    return @checkSpaces(@wallSpots, " ") if @doubleThreatCornerCheck()
+    return @doubleThreatWallCheck() if @doubleThreatWallCheck()
+  
+  doubleThreatCornerCheck: ->
     corners = @checkSpaces([0,2], @playerToken)
     doubleThreat = @checkSpaces((@oppositeSpots[spot] for spot in corners), @playerToken)
     return true if doubleThreat.length > 0
 
+  doubleThreatWallCheck: ->
+    wall_combos = [[@rows[0],@columns[0]],[@rows[0], @columns[2]],[@rows[2], @columns[0]],[@rows[2], @columns[2]]]
+    for combos in wall_combos
+      if @checkSpaces([combos[0][1]], @playerToken).length is 1 and @checkSpaces(combos[0], " ").length is 2
+        if @checkSpaces([combos[1][1]], @playerToken).length is 1 and @checkSpaces(combos[1], " ").length is 2
+          return @intersection(combos[0],combos[1])
+  
+  intersection: (a, b) ->
+    value for value in a when value in b
+  
   playCenterLocation: ->
     @checkSpaces([4], " ") if @checkSpaces([4], " ").length > 0
 

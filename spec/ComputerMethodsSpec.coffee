@@ -63,6 +63,14 @@ describe "Computer", ->
       beforeEach ->
         spyOn(ai, 'winningLocation').andReturn(null)
         spyOn(ai, 'blockLocation').andReturn(null)
+      it "should return [8] if [5,7] are occupied by player and [2,6] are open", ->
+        emptyBoard[5] = "X"
+        emptyBoard[4] = "O"
+        emptyBoard[7] = "X"
+        console.log("start")
+        expect(ai.gameLogic(emptyBoard)).toEqual([8])
+        console.log("end")
+      
       it "should return [1,3,5,7] if [2,6] are occupied by the player", ->
         emptyBoard[2] = "X"
         emptyBoard[6] = "X"
