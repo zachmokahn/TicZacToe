@@ -5,11 +5,11 @@
 
     player = game = void 0;
     beforeEach(function() {
-      player = new Player;
+      player = new Player("test");
       return game = new Game(player);
     });
-    describe("New Game", function() {
-      return it("board should be blank when game starts", function() {
+    describe("Rules for a New Game", function() {
+      it("board should be blank when game starts", function() {
         var position, _i, _len, _ref, _results;
 
         _ref = game.board;
@@ -20,8 +20,30 @@
         }
         return _results;
       });
+      it("should default Player's symbol to 'X", function() {
+        return expect(game.playerToken).toEqual("X");
+      });
+      it("should default Computer's symbol to 'O'", function() {
+        return expect(game.computerToken).toEqual("O");
+      });
+      it("should default First Turn to 'player'", function() {
+        return expect(game.turn).toEqual("player");
+      });
+      it("should allow player and computer symbols to be swapped", function() {
+        var newGame;
+
+        newGame = new Game(player, "player", "O");
+        expect(newGame.playerToken).toEqual("O");
+        return expect(newGame.computerToken).toEqual("X");
+      });
+      return it("should all computer to have the first turn", function() {
+        var newGame;
+
+        newGame = new Game(player, "computer");
+        return expect(newGame.turn).toEqual("computer");
+      });
     });
-    describe("Taking a turn", function() {
+    describe("Rules for taking a turn", function() {
       beforeEach(function() {
         game.playerMove(1);
         spyOn(game, 'computerLogic').andReturn(2);
@@ -30,19 +52,59 @@
       it("position should change to 'x' when first player selects a board location", function() {
         return expect(game.checkLocation(1)).toEqual("X");
       });
-      it("position should change to 'o' when computer selects a board location", function() {
+      return it("position should change to 'o' when computer selects a board location", function() {
         return expect(game.checkLocation(2)).toEqual("O");
       });
-      return it("position should not change and error should be raised if it is already filled on the board", function() {
-        spyOn(game, 'illegalTurnError');
-        game.playerMove(2);
-        expect(game.checkLocation(2)).toEqual("O");
-        game.computerMove();
-        expect(game.checkLocation(1)).toEqual("X");
-        return expect(game.illegalTurnError.calls.length).toEqual(2);
+    });
+    describe("Computer Logic", function() {
+      it("should take the winning move if present", function() {
+        game.board[0] = "X";
+        game.board[1] = "O";
+        game.board[2] = "X";
+        game.board[4] = "O";
+        game.board[3] = "X";
+        return expect(game.computerLogic()).toEqual(7);
+      });
+      it("should take the blocking move if present and can't win", function() {
+        game.board[0] = "X";
+        game.board[4] = "O";
+        game.board[3] = "X";
+        return expect(game.computerLogic()).toEqual(6);
+      });
+      it("should take a wall if double threat present", function() {
+        game.board[0] = "X";
+        game.board[4] = "O";
+        game.board[8] = "X";
+        return expect(game.computerLogic()).toEqual(1);
+      });
+      it("should take the center if not taken on first move", function() {
+        game.playerMove(1);
+        return expect(game.computerLogic()).toEqual(4);
+      });
+      it("should take an opposite corner if no center is availabe", function() {
+        game.board[0] = "X";
+        game.board[4] = "O";
+        game.board[5] = "X";
+        return expect(game.computerLogic()).toEqual(8);
+      });
+      it("should play any corner", function() {
+        game.board[3] = "X";
+        game.board[4] = "O";
+        game.board[5] = "X";
+        return expect(game.computerLogic()).toEqual(0);
+      });
+      return it("should play any wall if it can't play any corner", function() {
+        game.board[4] = "X";
+        game.board[0] = "O";
+        game.board[8] = "X";
+        game.board[6] = "O";
+        game.board[2] = "X";
+        game.board[5] = "O";
+        game.board[3] = "X";
+        return expect(game.computerLogic()).toEqual(1);
       });
     });
-    return describe("alternating turns", function() {
+    describe("Rules for alternating turns", function() {
       it("turn should initialize to the player", function() {
         return expect(game.turn).toEqual("player");
       });
@@ -56,26 +118,45 @@
         game.computerMove();
         return expect(game.turn).toEqual("player");
       });
-      it("turn should not change and error should be raised if the 'user' makes an illegal move", function() {
-        spyOn(game, 'illegalTurnError');
+      return it("turn should not change turn if the 'user' makes an illegal move", function() {
         spyOn(game, 'computerLogic').andReturn(2);
         game.playerMove(1);
         game.computerMove();
         game.playerMove(2);
-        expect(game.turn).toEqual("player");
-        return expect(game.illegalTurnError).toHaveBeenCalled();
+        return expect(game.turn).toEqual("player");
       });
-      it("should raise an error and not allow the player to choose unless it is the player's turn", function() {
-        game.turn = "computer";
-        spyOn(game, 'illegalTurnError');
+    });
+    return describe("Rules for game is over", function() {
+      it("gameOver is false when the game starts", function() {
+        return expect(game.gameOver).toEqual(false);
+      });
+      it("gameOver is true and alert is sent when the Player has won", function() {
+        spyOn(game, 'checkIfWon').andReturn(true);
+        spyOn(game, 'playerWon');
         game.playerMove(1);
-        return expect(game.illegalTurnError).toHaveBeenCalled();
+        expect(game.gameOver).toEqual(true);
+        return expect(game.playerWon).toHaveBeenCalled();
       });
-      return it("should raise and error and not allow the computer to choose unless it is the computer's turn", function() {
-        spyOn(game, 'illegalTurnError');
-        spyOn(game, 'computerLogic').andReturn(2);
+      it("gameOver is true and alert is sent when the Computer has won", function() {
+        game.turn = "computer";
+        spyOn(game, 'checkIfWon').andReturn(true);
+        spyOn(game, 'computerWon');
         game.computerMove();
-        return expect(game.illegalTurnError).toHaveBeenCalled();
+        expect(game.gameOver).toEqual(true);
+        return expect(game.computerWon).toHaveBeenCalled();
+      });
+      it("gameOver is true and alert is sent when the game is a draw", function() {
+        spyOn(game, 'nobodyWon');
+        game.moveCount = 8;
+        game.playerMove(4);
+        expect(game.gameOver).toEqual(true);
+        return expect(game.nobodyWon).toHaveBeenCalled();
+      });
+      return it("gameIsWon Should return True if 0,1,2 are filled with 'X'", function() {
+        game.board[0] = "X";
+        game.board[1] = "X";
+        game.board[2] = "X";
+        return expect(game.checkIfWon("X")).toEqual(true);
       });
     });
   });
