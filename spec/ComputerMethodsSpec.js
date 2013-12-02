@@ -78,6 +78,14 @@
           spyOn(ai, 'winningLocation').andReturn(null);
           return spyOn(ai, 'blockLocation').andReturn(null);
         });
+        it("should return [8] if [5,7] are occupied by player and [2,6] are open", function() {
+          emptyBoard[5] = "X";
+          emptyBoard[4] = "O";
+          emptyBoard[7] = "X";
+          console.log("start");
+          expect(ai.gameLogic(emptyBoard)).toEqual([8]);
+          return console.log("end");
+        });
         return it("should return [1,3,5,7] if [2,6] are occupied by the player", function() {
           emptyBoard[2] = "X";
           emptyBoard[6] = "X";
