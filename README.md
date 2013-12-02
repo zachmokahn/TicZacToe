@@ -1,6 +1,8 @@
 ### Unbeatable TicTacToe
 ##### by ZachmoKahn
+<img align="right" src="img/gameplay.gif" height=100 width=100 />
 (Here is a [demo](http://zacharyjdavy.com/ttt-specs) of the game)
+
 
 #### Running the game Locally
 1. Clone the Repo and cd into the folder
