@@ -1,11 +1,60 @@
 describe "Computer", ->
-  fullBoard = emptyBoard = ai = undefined
-  beforeEach ->
-    emptyBoard = [" "," "," "," "," "," "," "," "," "]
-    fullBoard = ["X","X","X","X","X","X","X","X","X"]
-    ai = new Computer("O","X")
+  describe "Algorithm", ->
+    game = undefined
+    beforeEach ->
+      game = new Game(new Player("test"))
+    it "should take the winning move if present", ->
+      game.board[0] = "X"
+      game.board[1] = "O"
+      game.board[2] = "X"
+      game.board[4] = "O"
+      game.board[3] = "X"
+      expect(game.computerLogic()).toEqual(7)
+
+    it "should take the blocking move if present and can't win", ->
+      game.board[0] = "X"
+      game.board[4] = "O"
+      game.board[3] = "X"
+      expect(game.computerLogic()).toEqual(6)
+
+    it "should take a wall if double threat present", ->
+      game.board[0] = "X"
+      game.board[4] = "O"
+      game.board[8] = "X"
+      expect(game.computerLogic()).toEqual(1)
+
+    it "should take the center if not taken on first move", ->
+      game.playerMove(1)
+      expect(game.computerLogic()).toEqual(4)
+
+    it "should take an opposite corner if no center is availabe", ->
+      game.board[0] = "X"
+      game.board[4] = "O"
+      game.board[5] = "X"
+      expect(game.computerLogic()).toEqual(8)
+
+    it "should play any corner", ->
+      game.board[3] = "X"
+      game.board[4] = "O"
+      game.board[5] = "X"
+      expect(game.computerLogic()).toEqual(0)
+
+    it "should play any wall if it can't play any corner", ->
+      game.board[4] = "X"
+      game.board[0] = "O"
+      game.board[8] = "X"
+      game.board[6] = "O"
+      game.board[2] = "X"
+      game.board[5] = "O"
+      game.board[3] = "X"
+      expect(game.computerLogic()).toEqual(1)
 
   describe "Methods", ->
+    fullBoard = emptyBoard = ai = undefined
+    beforeEach ->
+      emptyBoard = [" "," "," "," "," "," "," "," "," "]
+      fullBoard = ["X","X","X","X","X","X","X","X","X"]
+      ai = new Computer("O","X")
 
     describe "WallLocation", ->
       beforeEach ->
@@ -70,7 +119,7 @@ describe "Computer", ->
         console.log("start")
         expect(ai.gameLogic(emptyBoard)).toEqual([8])
         console.log("end")
-      
+
       it "should return [1,3,5,7] if [2,6] are occupied by the player", ->
         emptyBoard[2] = "X"
         emptyBoard[6] = "X"
