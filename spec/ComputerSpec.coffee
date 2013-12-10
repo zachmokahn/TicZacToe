@@ -1,208 +1,201 @@
 describe "Computer", ->
-  describe "Algorithm", ->
-    game = undefined
-    beforeEach ->
-      game = new Game(new Player("test"))
-    it "should take the winning move if present", ->
-      game.board[0] = "X"
-      game.board[1] = "O"
-      game.board[2] = "X"
-      game.board[4] = "O"
-      game.board[3] = "X"
-      expect(game.computerLogic()).toEqual(7)
-
-    it "should take the blocking move if present and can't win", ->
-      game.board[0] = "X"
-      game.board[4] = "O"
-      game.board[3] = "X"
-      expect(game.computerLogic()).toEqual(6)
-
-    it "should take a wall if double threat present", ->
-      game.board[0] = "X"
-      game.board[4] = "O"
-      game.board[8] = "X"
-      expect(game.computerLogic()).toEqual(1)
-
-    it "should take the center if not taken on first move", ->
-      game.playerMove(1)
-      expect(game.computerLogic()).toEqual(4)
-
-    it "should take an opposite corner if no center is availabe", ->
-      game.board[0] = "X"
-      game.board[4] = "O"
-      game.board[5] = "X"
-      expect(game.computerLogic()).toEqual(8)
-
-    it "should play any corner", ->
-      game.board[3] = "X"
-      game.board[4] = "O"
-      game.board[5] = "X"
-      expect(game.computerLogic()).toEqual(0)
-
-    it "should play any wall if it can't play any corner", ->
-      game.board[4] = "X"
-      game.board[0] = "O"
-      game.board[8] = "X"
-      game.board[6] = "O"
-      game.board[2] = "X"
-      game.board[5] = "O"
-      game.board[3] = "X"
-      expect(game.computerLogic()).toEqual(1)
+  modifiedBoard = board = computer = undefined
+  beforeEach ->
+    modifiedBoard = [" "," "," "," "," "," "," "," "," "]
+    board = new Board("X", "O")
+    computer = new Computer(board)
+  describe "new Computer", ->
+    it "should take a Board in the parameters", ->
+      expect(computer.board).toEqual(board)
+    it "should detect the spaces in the board", ->
+      expect(computer.readSpaces()).toEqual(modifiedBoard)
 
   describe "Methods", ->
-    fullBoard = emptyBoard = ai = undefined
-    beforeEach ->
-      emptyBoard = [" "," "," "," "," "," "," "," "," "]
-      fullBoard = ["X","X","X","X","X","X","X","X","X"]
-      ai = new Computer("O","X")
+    describe "checkForComputerWin", ->
+      it "should return true and assign bestMove to the winning move", ->
+        modifiedBoard[0] = "O"
+        modifiedBoard[1] = "O"
+        board.spaces = modifiedBoard
+        expect(computer.checkForComputerWin()).toEqual(true)
+        expect(computer.bestMove).toEqual(2)
 
-    describe "WallLocation", ->
-      beforeEach ->
-        spyOn(ai, 'winningLocation').andReturn(null)
-        spyOn(ai, 'blockLocation').andReturn(null)
-        spyOn(ai, 'blockDoubleThreatLocation').andReturn(null)
-        spyOn(ai, 'playCenterLocation').andReturn(null)
-        spyOn(ai, 'playOppositeCornerLocation').andReturn(null)
-        spyOn(ai, 'playAnyCornerLocation').andReturn(null)
-      it "should return an array of all the wall spots if the board is empty", ->
-        expect(ai.gameLogic(emptyBoard)).toEqual([1,3,5,7])
-      it "should return an array of approriate characters", ->
-        emptyBoard[1] = "X"
-        expect(ai.gameLogic(emptyBoard)).toEqual([3,5,7])
-        emptyBoard[7] = "X"
-        expect(ai.gameLogic(emptyBoard)).toEqual([3,5])
+      it "should return false and not assign bestMove if win is not present", ->
+        modifiedBoard[0] = "O"
+        modifiedBoard[1] = "X"
+        board.spaces = modifiedBoard
+        expect(computer.checkForComputerWin()).toEqual(false)
+        expect(computer.bestMove).not.toBeDefined()
 
-    describe "CornerLocation", ->
-      beforeEach ->
-        spyOn(ai, 'winningLocation').andReturn(null)
-        spyOn(ai, 'blockLocation').andReturn(null)
-        spyOn(ai, 'blockDoubleThreatLocation').andReturn(null)
-        spyOn(ai, 'playCenterLocation').andReturn(null)
-        spyOn(ai, 'playOppositeCornerLocation').andReturn(null)
-      it "should return an array of all the corner spots if the board is empty", ->
-        expect(ai.gameLogic(emptyBoard)).toEqual([0,2,6,8])
-      it " should return an array of approriate characters", ->
-        emptyBoard[0] = "X"
-        expect(ai.gameLogic(emptyBoard)).toEqual([2,6,8])
-        emptyBoard[8] = "X"
-        expect(ai.gameLogic(emptyBoard)).toEqual([2,6])
+    describe "checkForBlockPlayerWin", ->
+      it "should return true and assign bestMove to the blocking move", ->
+        modifiedBoard[0] = "X"
+        modifiedBoard[1] = "X"
+        board.spaces = modifiedBoard
+        expect(computer.checkForBlockPlayerWin()).toEqual(true)
+        expect(computer.bestMove).toEqual(2)
 
-    describe "OppositeCornerLocation", ->
-      beforeEach ->
-        spyOn(ai, 'winningLocation').andReturn(null)
-        spyOn(ai, 'blockLocation').andReturn(null)
-        spyOn(ai, 'blockDoubleThreatLocation').andReturn(null)
-        spyOn(ai, 'playCenterLocation').andReturn(null)
-      it "should return [0] if [8] is occupied", ->
-        emptyBoard[8] = "X"
-        expect(ai.gameLogic(emptyBoard)).toEqual([0])
-      it "should return [2] if [6] is occupied", ->
-        emptyBoard[6] = "X"
-        expect(ai.gameLogic(emptyBoard)).toEqual([2])
+      it "should return false and not assign bestMove if block is not present", ->
+        modifiedBoard[0] = "O"
+        modifiedBoard[1] = "X"
+        board.spaces = modifiedBoard
+        expect(computer.checkForBlockPlayerWin()).toEqual(false)
+        expect(computer.bestMove).not.toBeDefined()
 
-    describe "CenterLocation", ->
-      beforeEach ->
-        spyOn(ai, 'winningLocation').andReturn(null)
-        spyOn(ai, 'blockLocation').andReturn(null)
-        spyOn(ai, 'blockDoubleThreatLocation').andReturn(null)
-      it "should return [4] if center is unoccupied", ->
-        expect(ai.gameLogic(emptyBoard)).toEqual([4])
+    describe "checkForPlayerDoubleThreat", ->
+      describe "checkCornerDoubleThreat", ->
+        it "should return true and assign bestMove to a doubleThreat deterent if [0,8] filled", ->
+          modifiedBoard[0] = "X"
+          modifiedBoard[4] = "O"
+          modifiedBoard[8] = "X"
+          board.spaces = modifiedBoard
+          expect(computer.checkForPlayerDoubleThreat()).toEqual(true)
+          expect(computer.bestMove).toEqual(1)
 
-    describe "blockDoubleThreat", ->
-      beforeEach ->
-        spyOn(ai, 'winningLocation').andReturn(null)
-        spyOn(ai, 'blockLocation').andReturn(null)
-      it "should return [8] if [5,7] are occupied by player and [2,6] are open", ->
-        emptyBoard[5] = "X"
-        emptyBoard[4] = "O"
-        emptyBoard[7] = "X"
-        console.log("start")
-        expect(ai.gameLogic(emptyBoard)).toEqual([8])
-        console.log("end")
+        it "should return true and assign bestMove to a doubleThreat deterent if [2,6] filled", ->
+          modifiedBoard[2] = "X"
+          modifiedBoard[4] = "O"
+          modifiedBoard[6] = "X"
+          board.spaces = modifiedBoard
+          expect(computer.checkForPlayerDoubleThreat()).toEqual(true)
+          expect(computer.bestMove).toEqual(1)
+        it "should return false and not assign bestMove if cornerDoubleThreat is not present", ->
+          board.spaces = modifiedBoard
+          expect(computer.checkForPlayerDoubleThreat()).toEqual(false)
+          expect(computer.bestMove).not.toBeDefined()
 
-      it "should return [1,3,5,7] if [2,6] are occupied by the player", ->
-        emptyBoard[2] = "X"
-        emptyBoard[6] = "X"
-        expect(ai.gameLogic(emptyBoard)).toEqual([1,3,5,7])
+      describe "checkWallDoubleThreat", ->
+        it "should return true and assign bestMove to a doubleThreat deterent if [5,7] filled", ->
+          modifiedBoard[5] = "X"
+          modifiedBoard[4] = "O"
+          modifiedBoard[7] = "X"
+          board.spaces = modifiedBoard
+          expect(computer.checkForPlayerDoubleThreat()).toEqual(true)
+          expect(computer.bestMove).toEqual(8)
 
-    describe "Check For Wins", ->
+        it "should return true and assign bestMove to a doubleThreat deterent if [3,7] filled", ->
+          modifiedBoard[3] = "X"
+          modifiedBoard[4] = "O"
+          modifiedBoard[7] = "X"
+          board.spaces = modifiedBoard
+          expect(computer.checkForPlayerDoubleThreat()).toEqual(true)
+          expect(computer.bestMove).toEqual(6)
 
-      describe "Check Horizontal Win", ->
-        it "should return [2] if [0,1] are occupied", ->
-          emptyBoard[0] = "X"
-          emptyBoard[1] = "X"
-          ai.board = emptyBoard
-          expect(ai.check("X", ai.rows)).toEqual([2])
-        it "should return [0] if [1,2] are occupied", ->
-          emptyBoard[1] = "X"
-          emptyBoard[2] = "X"
-          ai.board = emptyBoard
-          expect(ai.check("X", ai.rows)).toEqual([0])
-        it "should return [4] if [3,5] are occupied", ->
-          emptyBoard[3] = "X"
-          emptyBoard[5] = "X"
-          ai.board = emptyBoard
-          expect(ai.check("X", ai.rows)).toEqual([4])
-        it "should return undefined if [6,7,8] are occupied", ->
-          emptyBoard[6] = "X"
-          emptyBoard[7] = "X"
-          emptyBoard[8] = "O"
-          ai.board = emptyBoard
-          expect(ai.check("X", ai.rows)).toEqual(null)
+        it "should return false and not assign bestMove if a wallDoubleThreat is not present", ->
+          board.spaces = modifiedBoard
+          expect(computer.checkForPlayerDoubleThreat()).toEqual(false)
+          expect(computer.bestMove).not.toBeDefined()
 
-      describe "Check Vertical Win", ->
-        it "should return [4] if [1,7] are occupied", ->
-          emptyBoard[1] = "X"
-          emptyBoard[7] = "X"
-          ai.board = emptyBoard
-          expect(ai.check("X", ai.columns)).toEqual([4])
-        it "should return [1] if [4,7] are occupied", ->
-          emptyBoard[4] = "X"
-          emptyBoard[7] = "X"
-          ai.board = emptyBoard
-          expect(ai.check("X", ai.columns)).toEqual([1])
-        it "should return [8] if [2,5] are occupied", ->
-          emptyBoard[2] = "X"
-          emptyBoard[5] = "X"
-          ai.board = emptyBoard
-          expect(ai.check("X", ai.columns)).toEqual([8])
-        it "should return undefined if [0,3,6] are occupied", ->
-          emptyBoard[0] = "X"
-          emptyBoard[3] = "X"
-          emptyBoard[6] = "O"
-          ai.board = emptyBoard
-          expect(ai.check("X", ai.columns)).toEqual(null)
+     describe "checkMiddleAvailability", ->
+        it "should return true and assign bestMove to the middle if space [4] is available", ->
+          board.spaces = modifiedBoard
+          expect(computer.checkMiddleAvailability()).toEqual(true)
+          expect(computer.bestMove).toEqual(4)
 
-      describe "Check Diagonal Win", ->
-        it "should return [4] if [0,8] are occupied", ->
-          emptyBoard[0] = "X"
-          emptyBoard[8] = "X"
-          ai.board = emptyBoard
-          expect(ai.check("X", ai.diagonals)).toEqual([4])
-        it "should return [2] if [4,6] are occupied", ->
-          emptyBoard[4] = "X"
-          emptyBoard[6] = "X"
-          ai.board = emptyBoard
-          expect(ai.check("X", ai.diagonals)).toEqual([2])
-        it "should return undefined if [0,4,8] are occupied", ->
-          emptyBoard[0] = "X"
-          emptyBoard[4] = "X"
-          emptyBoard[8] = "O"
-          ai.board = emptyBoard
-          expect(ai.check("X", ai.diagonals)).toEqual(null)
+        it "should return false and not assign besetMove if the middle is not available", ->
+          modifiedBoard[4] = "X"
+          board.spaces = modifiedBoard
+          expect(computer.checkMiddleAvailability()).toEqual(false)
+          expect(computer.bestMove).not.toBeDefined()
 
-    describe "blockLocation", ->
-      beforeEach ->
-        spyOn(ai, 'winningLocation').andReturn(null)
-      it "HORIZONTAL CHECK: it should return [1] if [0,2] are occupied by opponent", ->
-        emptyBoard[0] = "X"
-        emptyBoard[2] = "X"
-        expect(ai.gameLogic(emptyBoard)).toEqual([1])
-      it "VERTICAL CHECK: it should return [7] if [1,4] are occupied by opponent", ->
-        emptyBoard[1] = "X"
-        emptyBoard[4] = "X"
-        expect(ai.gameLogic(emptyBoard)).toEqual([7])
-      it "DIAGONAL CHECK: it should return [0] if [4,8] are occupied by opponent", ->
-        emptyBoard[4] = "X"
-        emptyBoard[8] = "X"
-        expect(ai.gameLogic(emptyBoard)).toEqual([0])
+      describe "checkOppositeCorner", ->
+        it "should return true and assign bestMove to the opposite corner if available", ->
+          modifiedBoard[0] = "X"
+          modifiedBoard[4] = "O"
+          modifiedBoard[5] = "X"
+          board.spaces = modifiedBoard
+          expect(computer.checkPlayerOppositeCorner()).toEqual(true)
+          expect(computer.bestMove).toEqual(8)
+
+        it "should return false and not assign bestMove if both corners are occupied", ->
+          modifiedBoard[0] = "X"
+          modifiedBoard[8] = "O"
+          board.spaces = modifiedBoard
+          expect(computer.checkPlayerOppositeCorner()).toEqual(false)
+          expect(computer.bestMove).not.toBeDefined()
+
+        it "should return false and not assign bestMove if no corners are occupied", ->
+          board.spaces = modifiedBoard
+          expect(computer.checkPlayerOppositeCorner()).toEqual(false)
+          expect(computer.bestMove).not.toBeDefined()
+
+      describe "getAnyCorner", ->
+        it "should return true and assign bestMove to any corner if availaible", ->
+          board.spaces = modifiedBoard
+          expect(computer.getAnyCorner()).toEqual(true)
+          expect(computer.bestMove).toEqual(0)
+
+        it "should return false and not assign bestMove if no corner is available", ->
+          modifiedBoard[0] = "X"
+          modifiedBoard[6] = "X"
+          modifiedBoard[2] = "O"
+          modifiedBoard[8] = "O"
+          board.spaces = modifiedBoard
+          expect(computer.getAnyCorner()).toEqual(false)
+          expect(computer.bestMove).not.toBeDefined()
+
+     describe "getAnyWall", ->
+       it "should return true and assign bestMove to any wall spot if available", ->
+         board.spaces = modifiedBoard
+         expect(computer.getAnyWall()).toEqual(true)
+         expect(computer.bestMove).toEqual(1)
+
+       it "should return false and not assign bestMove if no wall is available", ->
+          modifiedBoard[1] = "X"
+          modifiedBoard[3] = "X"
+          modifiedBoard[5] = "O"
+          modifiedBoard[7] = "O"
+          board.spaces = modifiedBoard
+          expect(computer.getAnyWall()).toEqual(false)
+          expect(computer.bestMove).not.toBeDefined()
+
+  describe "findBestMove", ->
+    it "should take the winning move if present", ->
+      computer.board.spaces[0] = "X"
+      computer.board.spaces[1] = "O"
+      computer.board.spaces[2] = "X"
+      computer.board.spaces[4] = "O"
+      computer.board.spaces[3] = "X"
+      expect(computer.findBestMove()).toEqual(7)
+
+    it "should take the blocking move if present and can't win", ->
+      computer.board.spaces[0] = "X"
+      computer.board.spaces[4] = "O"
+      computer.board.spaces[3] = "X"
+      expect(computer.findBestMove()).toEqual(6)
+
+    it "should take a wall if corner double threat is present and no block is available", ->
+      computer.board.spaces[0] = "X"
+      computer.board.spaces[4] = "O"
+      computer.board.spaces[8] = "X"
+      expect(computer.findBestMove()).toEqual(1)
+
+    it "should take the blocking corner if a wall double threat present and no block is available", ->
+      computer.board.spaces[5] = "X"
+      computer.board.spaces[4] = "O"
+      computer.board.spaces[7] = "X"
+      expect(computer.findBestMove()).toEqual(8)
+
+    it "should take the center if no double threat present", ->
+      expect(computer.findBestMove()).toEqual(4)
+
+    it "should take an opposite corner if no center is available", ->
+      computer.board.spaces[0] = "X"
+      computer.board.spaces[4] = "O"
+      computer.board.spaces[5] = "X"
+      expect(computer.findBestMove()).toEqual(8)
+
+    it "should play any corner if no opposite corner is available", ->
+      computer.board.spaces[3] = "X"
+      computer.board.spaces[4] = "O"
+      computer.board.spaces[5] = "X"
+      expect(computer.findBestMove()).toEqual(0)
+
+    it "should play any wall if it no corner is available", ->
+      computer.board.spaces[4] = "X"
+      computer.board.spaces[0] = "O"
+      computer.board.spaces[8] = "X"
+      computer.board.spaces[6] = "O"
+      computer.board.spaces[2] = "X"
+      computer.board.spaces[5] = "O"
+      computer.board.spaces[3] = "X"
+      expect(computer.findBestMove()).toEqual(1)

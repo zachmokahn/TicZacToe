@@ -4,125 +4,136 @@
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   Computer = (function() {
-    function Computer(computerToken, playerToken) {
-      this.computerToken = computerToken;
-      this.playerToken = playerToken;
+    function Computer(board) {
+      this.board = board;
     }
 
-    Computer.prototype.cornerSpots = [0, 2, 6, 8];
+    Computer.prototype.readSpaces = function() {
+      return this.board.spaces;
+    };
 
-    Computer.prototype.wallSpots = [1, 3, 5, 7];
-
-    Computer.prototype.oppositeSpots = [8, 7, 6, 5, 4, 3, 2, 1, 0];
-
-    Computer.prototype.rows = [[0, 1, 2], [3, 4, 5], [6, 7, 8]];
-
-    Computer.prototype.columns = [[0, 3, 6], [1, 4, 7], [2, 5, 8]];
-
-    Computer.prototype.diagonals = [[0, 4, 8], [2, 4, 6]];
-
-    Computer.prototype.gameLogic = function(board) {
-      this.board = board;
-      if (this.winningLocation()) {
-        return this.winningLocation();
+    Computer.prototype.findBestMove = function() {
+      if (this.checkForComputerWin()) {
+        return this.bestMove;
       }
-      if (this.blockLocation()) {
-        return this.blockLocation();
+      if (this.checkForBlockPlayerWin()) {
+        return this.bestMove;
       }
-      if (this.blockDoubleThreatLocation()) {
-        return this.blockDoubleThreatLocation();
+      if (this.checkForPlayerDoubleThreat()) {
+        return this.bestMove;
       }
-      if (this.playCenterLocation()) {
-        return this.playCenterLocation();
+      if (this.checkMiddleAvailability()) {
+        return this.bestMove;
       }
-      if (this.playOppositeCornerLocation()) {
-        return this.playOppositeCornerLocation();
+      if (this.checkPlayerOppositeCorner()) {
+        return this.bestMove;
       }
-      if (this.playAnyCornerLocation()) {
-        return this.playAnyCornerLocation();
+      if (this.getAnyCorner()) {
+        return this.bestMove;
       }
-      if (this.playWallLocation()) {
-        return this.playWallLocation();
+      if (this.getAnyWall()) {
+        return this.bestMove;
       }
     };
 
-    Computer.prototype.winningLocation = function() {
-      return this.checkForWin(this.computerToken);
+    Computer.prototype.checkForComputerWin = function() {
+      return this.checkForPossibleWin(this.board.computerToken);
     };
 
-    Computer.prototype.blockLocation = function() {
-      return this.checkForWin(this.playerToken);
+    Computer.prototype.checkForBlockPlayerWin = function() {
+      return this.checkForPossibleWin(this.board.playerToken);
     };
 
-    Computer.prototype.checkForWin = function(symbol) {
-      if (this.check(symbol, this.rows)) {
-        return this.check(symbol, this.rows);
+    Computer.prototype.checkForPlayerDoubleThreat = function() {
+      if (this.checkCornerDoubleThreat(this.board.playerToken)) {
+        return true;
       }
-      if (this.check(symbol, this.columns)) {
-        return this.check(symbol, this.columns);
+      if (this.checkWallDoubleThreat(this.board.playerToken)) {
+        return true;
       }
-      if (this.check(symbol, this.diagonals)) {
-        return this.check(symbol, this.diagonals);
-      }
+      return false;
     };
 
-    Computer.prototype.check = function(symbol, values) {
-      var value, _i, _len;
-
-      for (_i = 0, _len = values.length; _i < _len; _i++) {
-        value = values[_i];
-        if (this.checkWin(symbol, value)) {
-          return this.checkWin(symbol, value);
-        }
-      }
+    Computer.prototype.checkMiddleAvailability = function() {
+      return this.getEmpty([4]);
     };
 
-    Computer.prototype.checkWin = function(symbol, list) {
-      if (this.checkSpaces(list, symbol).length === 2 && this.checkSpaces(list, " ").length === 1) {
-        return this.checkSpaces(list, " ");
-      }
+    Computer.prototype.checkPlayerOppositeCorner = function() {
+      return this.checkOppositeCorner(this.board.playerToken);
     };
 
-    Computer.prototype.blockDoubleThreatLocation = function() {
-      if (this.doubleThreatCornerCheck()) {
-        return this.checkSpaces(this.wallSpots, " ");
-      }
-      if (this.doubleThreatWallCheck()) {
-        return this.doubleThreatWallCheck();
-      }
+    Computer.prototype.getAnyCorner = function() {
+      return this.getEmpty(this.board.cornerSpots);
     };
 
-    Computer.prototype.doubleThreatCornerCheck = function() {
-      var corners, doubleThreat, spot;
+    Computer.prototype.getAnyWall = function() {
+      return this.getEmpty(this.board.wallSpots);
+    };
 
-      corners = this.checkSpaces([0, 2], this.playerToken);
-      doubleThreat = this.checkSpaces((function() {
+    Computer.prototype.getEmpty = function(spaces) {
+      var availableSpaces;
+
+      availableSpaces = this.board.getSpaces(spaces, this.board.emptyToken);
+      if (availableSpaces.length > 0) {
+        this.getBestMove(availableSpaces);
+        return true;
+      }
+      return false;
+    };
+
+    Computer.prototype.checkOppositeCorner = function(token) {
+      var filledSpaces;
+
+      filledSpaces = this.board.getSpaces(this.board.cornerSpots, token);
+      return this.checkIfOppositeAvailable(filledSpaces);
+    };
+
+    Computer.prototype.checkIfOppositeAvailable = function(spaces) {
+      var emptySpaces, oppositeSpaces, space;
+
+      oppositeSpaces = (function() {
         var _i, _len, _results;
 
         _results = [];
-        for (_i = 0, _len = corners.length; _i < _len; _i++) {
-          spot = corners[_i];
-          _results.push(this.oppositeSpots[spot]);
+        for (_i = 0, _len = spaces.length; _i < _len; _i++) {
+          space = spaces[_i];
+          _results.push(this.board.oppositeSpots[space]);
         }
         return _results;
-      }).call(this), this.playerToken);
-      if (doubleThreat.length > 0) {
+      }).call(this);
+      emptySpaces = this.board.getSpaces(oppositeSpaces, this.board.emptyToken);
+      if (emptySpaces.length > 0) {
+        this.getBestMove(emptySpaces);
         return true;
+      }
+      return false;
+    };
+
+    Computer.prototype.checkWallDoubleThreat = function(token) {
+      if (this.wallDoubleThreatPossible(token)) {
+        return true;
+      }
+      return false;
+    };
+
+    Computer.prototype.wallDoubleThreatPossible = function(token) {
+      var combos, wallCombos, _i, _len;
+
+      wallCombos = [[this.board.rows[0], this.board.columns[0]], [this.board.rows[0], this.board.columns[2]], [this.board.rows[2], this.board.columns[0]], [this.board.rows[2], this.board.columns[2]]];
+      for (_i = 0, _len = wallCombos.length; _i < _len; _i++) {
+        combos = wallCombos[_i];
+        if (this.occupyBothWalls(combos, token)) {
+          return true;
+        }
       }
     };
 
-    Computer.prototype.doubleThreatWallCheck = function() {
-      var combos, wall_combos, _i, _len;
-
-      wall_combos = [[this.rows[0], this.columns[0]], [this.rows[0], this.columns[2]], [this.rows[2], this.columns[0]], [this.rows[2], this.columns[2]]];
-      for (_i = 0, _len = wall_combos.length; _i < _len; _i++) {
-        combos = wall_combos[_i];
-        if (this.checkSpaces([combos[0][1]], this.playerToken).length === 1 && this.checkSpaces(combos[0], " ").length === 2) {
-          if (this.checkSpaces([combos[1][1]], this.playerToken).length === 1 && this.checkSpaces(combos[1], " ").length === 2) {
-            return this.intersection(combos[0], combos[1]);
-          }
-        }
+    Computer.prototype.occupyBothWalls = function(combos, token) {
+      if (this.occupyWall(combos[0], token) && this.occupyWall(combos[1], token)) {
+        this.getBestMove(this.intersection(combos[0], combos[1]));
+        return true;
       }
+      return false;
     };
 
     Computer.prototype.intersection = function(a, b) {
@@ -138,59 +149,106 @@
       return _results;
     };
 
-    Computer.prototype.playCenterLocation = function() {
-      if (this.checkSpaces([4], " ").length > 0) {
-        return this.checkSpaces([4], " ");
-      }
+    Computer.prototype.occupyWall = function(combo, token) {
+      return this.board.checkSpot(combo[1], token) && this.board.getSpaces(combo, this.board.emptyToken).length === 2;
     };
 
-    Computer.prototype.playOppositeCornerLocation = function() {
-      if (this.getUnoccupiedOpposites(this.checkSpaces(this.cornerSpots, this.playerToken)).length > 0) {
-        return this.getUnoccupiedOpposites(this.checkSpaces(this.cornerSpots, this.playerToken));
+    Computer.prototype.checkCornerDoubleThreat = function(token) {
+      if (this.cornerDoubleThreatPossible(token)) {
+        this.getBestMove(this.board.wallSpots);
+        return true;
       }
+      return false;
     };
 
-    Computer.prototype.getUnoccupiedOpposites = function(coordinates) {
-      var spot;
-
-      return this.checkSpaces((function() {
-        var _i, _len, _results;
-
-        _results = [];
-        for (_i = 0, _len = coordinates.length; _i < _len; _i++) {
-          spot = coordinates[_i];
-          _results.push(this.oppositeSpots[spot]);
-        }
-        return _results;
-      }).call(this), " ");
+    Computer.prototype.cornerDoubleThreatPossible = function(token) {
+      if (this.firstCornersOccupied(token) && this.firstEdgesEmpty()) {
+        return true;
+      }
+      if (this.secondCornerOccupied(token) && this.secondEdgesEmpty()) {
+        return true;
+      }
+      return false;
     };
 
-    Computer.prototype.playAnyCornerLocation = function() {
-      if (this.checkSpaces(this.cornerSpots, " ").length > 0) {
-        return this.checkSpaces(this.cornerSpots, " ");
-      }
+    Computer.prototype.firstCornersOccupied = function(token) {
+      return this.checkSpots([0, 8], token);
     };
 
-    Computer.prototype.playWallLocation = function() {
-      if (this.checkSpaces(this.wallSpots, " ").length > 0) {
-        return this.checkSpaces(this.wallSpots, " ");
-      }
+    Computer.prototype.secondCornerOccupied = function(token) {
+      return this.checkSpots([2, 6], token);
     };
 
-    Computer.prototype.checkSpaces = function(coordinates, character, board) {
-      var spot, _i, _len, _results;
+    Computer.prototype.firstEdgesEmpty = function() {
+      var edges, _i, _len, _ref, _results;
 
-      if (board == null) {
-        board = this.board;
-      }
+      _ref = [[1, 2, 5], [3, 6, 7]];
       _results = [];
-      for (_i = 0, _len = coordinates.length; _i < _len; _i++) {
-        spot = coordinates[_i];
-        if (board[spot] === character) {
-          _results.push(spot);
-        }
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        edges = _ref[_i];
+        _results.push(this.checkSpots(edges, this.board.emptyToken));
       }
       return _results;
+    };
+
+    Computer.prototype.secondEdgesEmpty = function() {
+      var edges, _i, _len, _ref, _results;
+
+      _ref = [[0, 1, 3], [5, 7, 8]];
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        edges = _ref[_i];
+        _results.push(this.checkSpots(edges, this.board.emptyToken));
+      }
+      return _results;
+    };
+
+    Computer.prototype.checkSpots = function(locations, token) {
+      var spot, _i, _len;
+
+      for (_i = 0, _len = locations.length; _i < _len; _i++) {
+        spot = locations[_i];
+        if (!this.board.checkSpot(spot, token)) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    Computer.prototype.checkForPossibleWin = function(token) {
+      var combo, winCombos, _i, _j, _len, _len1, _ref;
+
+      _ref = [this.board.rows, this.board.columns, this.board.diagonals];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        winCombos = _ref[_i];
+        for (_j = 0, _len1 = winCombos.length; _j < _len1; _j++) {
+          combo = winCombos[_j];
+          if (this.winIsPossible(combo, token)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
+    Computer.prototype.winIsPossible = function(combo, token) {
+      if (this.twoInARow(combo, token) && this.isWinnable(combo)) {
+        this.getBestMove(combo);
+        return true;
+      }
+      return false;
+    };
+
+    Computer.prototype.getBestMove = function(combo) {
+      return this.bestMove = this.board.getSpaces(combo, this.board.emptyToken)[0];
+    };
+
+    Computer.prototype.twoInARow = function(combo, token) {
+      return this.board.getSpaces(combo, token).length === 2;
+    };
+
+    Computer.prototype.isWinnable = function(combo) {
+      return this.board.getSpaces(combo, this.board.emptyToken).length === 1;
     };
 
     return Computer;
