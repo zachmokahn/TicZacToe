@@ -19,6 +19,9 @@
       if (this.checkForBlockPlayerWin()) {
         return this.bestMove;
       }
+      if (this.checkForComputerDoubleThreat()) {
+        return this.bestMove;
+      }
       if (this.checkForPlayerDoubleThreat()) {
         return this.bestMove;
       }
@@ -42,6 +45,16 @@
 
     Computer.prototype.checkForBlockPlayerWin = function() {
       return this.checkForPossibleWin(this.board.firstPlayerToken);
+    };
+
+    Computer.prototype.checkForComputerDoubleThreat = function() {
+      if (this.checkCornerDoubleThreat(this.board.secondPlayerToken)) {
+        return this.getCornerDoubleThreat();
+      }
+      if (this.checkWallDoubleThreat(this.board.secondPlayerToken)) {
+        return true;
+      }
+      return false;
     };
 
     Computer.prototype.checkForPlayerDoubleThreat = function() {
@@ -77,6 +90,22 @@
       if (availableSpaces.length > 0) {
         this.getBestMove(availableSpaces);
         return true;
+      }
+      return false;
+    };
+
+    Computer.prototype.getCornerDoubleThreat = function() {
+      var edge, _i, _len, _ref;
+
+      _ref = [[1, 0, 3], [5, 8, 7], [1, 2, 5], [3, 6, 7]];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        edge = _ref[_i];
+        if (this.checkSpots(edge, this.board.emptyToken)) {
+          console.log(edge);
+          console.log(edge[1]);
+          this.getBestMove([edge[1]]);
+          return true;
+        }
       }
       return false;
     };
@@ -180,27 +209,23 @@
     };
 
     Computer.prototype.firstEdgesEmpty = function() {
-      var edges, _i, _len, _ref, _results;
-
-      _ref = [[1, 2, 5], [3, 6, 7]];
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        edges = _ref[_i];
-        _results.push(this.checkSpots(edges, this.board.emptyToken));
-      }
-      return _results;
+      return this.checkEdgesEmpty([[1, 2, 5], [3, 6, 7]]);
     };
 
     Computer.prototype.secondEdgesEmpty = function() {
-      var edges, _i, _len, _ref, _results;
+      return this.checkEdgesEmpty([[0, 1, 3], [5, 7, 8]]);
+    };
 
-      _ref = [[0, 1, 3], [5, 7, 8]];
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        edges = _ref[_i];
-        _results.push(this.checkSpots(edges, this.board.emptyToken));
+    Computer.prototype.checkEdgesEmpty = function(edges) {
+      var edge, _i, _len;
+
+      for (_i = 0, _len = edges.length; _i < _len; _i++) {
+        edge = edges[_i];
+        if (this.checkSpots(edge, this.board.emptyToken)) {
+          return true;
+        }
       }
-      return _results;
+      return false;
     };
 
     Computer.prototype.checkSpots = function(locations, token) {

@@ -6,6 +6,7 @@ class Computer
   findBestMove: ->
     return @bestMove if @checkForComputerWin()
     return @bestMove if @checkForBlockPlayerWin()
+    return @bestMove if @checkForComputerDoubleThreat()
     return @bestMove if @checkForPlayerDoubleThreat()
     return @bestMove if @checkMiddleAvailability()
     return @bestMove if @checkPlayerOppositeCorner()
@@ -17,6 +18,11 @@ class Computer
 
   checkForBlockPlayerWin: ->
     @checkForPossibleWin(@board.firstPlayerToken)
+
+  checkForComputerDoubleThreat: ->
+    return @getCornerDoubleThreat() if @checkCornerDoubleThreat(@board.secondPlayerToken)
+    return true if @checkWallDoubleThreat(@board.secondPlayerToken)
+    false
 
   checkForPlayerDoubleThreat: ->
     return true if @checkCornerDoubleThreat(@board.firstPlayerToken)
@@ -40,6 +46,15 @@ class Computer
     if availableSpaces.length > 0
       @getBestMove(availableSpaces)
       return true
+    false
+
+  getCornerDoubleThreat: ->
+    for edge in [[1,0,3],[5,8,7],[1,2,5],[3,6,7]]
+      if @checkSpots(edge, @board.emptyToken)
+        console.log(edge)
+        console.log(edge[1])
+        @getBestMove([edge[1]])
+        return true
     false
 
   checkOppositeCorner: (token) ->
@@ -96,12 +111,15 @@ class Computer
     @checkSpots([2,6], token)
 
   firstEdgesEmpty: ->
-    for edges in [[1,2,5],[3,6,7]]
-      @checkSpots(edges, @board.emptyToken)
+    @checkEdgesEmpty([[1,2,5],[3,6,7]])
 
   secondEdgesEmpty: ->
-    for edges in [[0,1,3],[5,7,8]]
-      @checkSpots(edges, @board.emptyToken)
+    @checkEdgesEmpty([[0,1,3],[5,7,8]])
+
+  checkEdgesEmpty: (edges) ->
+    for edge in edges
+      return true if @checkSpots(edge, @board.emptyToken)
+    false
 
   checkSpots: (locations, token) ->
     for spot in locations
