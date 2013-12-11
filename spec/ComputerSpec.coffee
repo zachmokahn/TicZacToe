@@ -41,6 +41,51 @@ describe "Computer", ->
         expect(computer.checkForBlockPlayerWin()).toEqual(false)
         expect(computer.bestMove).not.toBeDefined()
 
+    describe "checkForComputerDoubleThreat", ->
+      describe "checkCornerDoubleThreat", ->
+        it "should return true and assign bestMove to a doubleThreat initiator if [0,8] filled", ->
+          modifiedBoard[0] = "O"
+          modifiedBoard[4] = "X"
+          modifiedBoard[8] = "O"
+          board.spaces = modifiedBoard
+          expect(computer.checkForComputerDoubleThreat()).toEqual(true)
+          expect(computer.bestMove).toEqual(2)
+
+        it "should return true and assign bestMove to a doubleThreat initiator if [2,6] filled", ->
+          modifiedBoard[2] = "O"
+          modifiedBoard[4] = "X"
+          modifiedBoard[6] = "O"
+          board.spaces = modifiedBoard
+          expect(computer.checkForComputerDoubleThreat()).toEqual(true)
+          expect(computer.bestMove).toEqual(0)
+
+        it "should return false and not assign bestMove if no cornerDoubleThreat is not present", ->
+          modifiedBoard[2] = "O"
+          board.spaces = modifiedBoard
+          expect(computer.checkForComputerDoubleThreat()).toEqual(false)
+
+      describe "checkWallDoubleThreat", ->
+        it "should return true and assign bestMove to a doubleThreat initiator if [5,7] filled", ->
+          modifiedBoard[5] = "O"
+          modifiedBoard[4] = "X"
+          modifiedBoard[7] = "O"
+          board.spaces = modifiedBoard
+          expect(computer.checkForComputerDoubleThreat()).toEqual(true)
+          expect(computer.bestMove).toEqual(8)
+
+        it "should return true and assign bestMove to a doubleThreat initiator if [3,7] filled", ->
+          modifiedBoard[3] = "O"
+          modifiedBoard[4] = "X"
+          modifiedBoard[7] = "O"
+          board.spaces = modifiedBoard
+          expect(computer.checkForComputerDoubleThreat()).toEqual(true)
+          expect(computer.bestMove).toEqual(6)
+
+        it "should return false and not assign bestMove if no cornerDoubleThreat is not present", ->
+          modifiedBoard[2] = "O"
+          board.spaces = modifiedBoard
+          expect(computer.checkForComputerDoubleThreat()).toEqual(false)
+
     describe "checkForPlayerDoubleThreat", ->
       describe "checkCornerDoubleThreat", ->
         it "should return true and assign bestMove to a doubleThreat deterent if [0,8] filled", ->
@@ -163,13 +208,27 @@ describe "Computer", ->
       computer.board.spaces[3] = "X"
       expect(computer.findBestMove()).toEqual(6)
 
-    it "should take a wall if corner double threat is present and no block is available", ->
+    it "should cause a fork if corner double threat is present and no block is available", ->
+      computer.board.spaces[0] = "O"
+      computer.board.spaces[4] = "X"
+      computer.board.spaces[8] = "O"
+      computer.board.spaces[2] = "X"
+      expect(computer.findBestMove()).toEqual(6)
+
+    it "should cause a fork if wall double threat is present and no corner double threat is available", ->
+      computer.board.spaces[5] = "O"
+      computer.board.spaces[4] = "X"
+      computer.board.spaces[7] = "O"
+      computer.board.spaces[3] = "X"
+      expect(computer.findBestMove()).toEqual(8)
+
+    it "should take a wall if corner double threat is present and no fork is available", ->
       computer.board.spaces[0] = "X"
       computer.board.spaces[4] = "O"
       computer.board.spaces[8] = "X"
       expect(computer.findBestMove()).toEqual(1)
 
-    it "should take the blocking corner if a wall double threat present and no block is available", ->
+    it "should take the blocking corner if a wall double threat present and no fork is available", ->
       computer.board.spaces[5] = "X"
       computer.board.spaces[4] = "O"
       computer.board.spaces[7] = "X"
