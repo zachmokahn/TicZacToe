@@ -53,19 +53,20 @@ describe "Board", ->
       board.spaces[4] = "O"
       expect(board.checkForDraw()).toEqual(false)
 
-  describe "playerMove", ->
+  describe "firstPlayerMove", ->
     it "should play the correct player token in the correct space if the space is blank", ->
-      board.playerMove(1)
+      board.firstPlayerMove(1)
       expect(board.spaces[1]).toEqual("X")
+
     it "should return false if the spot is occupied", ->
       board.spaces = drawBoard
-      expect(board.playerMove(1)).toEqual(false)
+      expect(board.firstPlayerMove(1)).toEqual(false)
 
-  describe "computerMove", ->
+  describe "secondPlayerMove", ->
     it "should play the correct computer token in the correct space if the space is blank", ->
-      board.computerMove(1)
+      board.secondPlayerMove(1)
       expect(board.spaces[1]).toEqual("O")
 
     it "should return false if the spot is occumpied", ->
      board.spaces = drawBoard
-     expect(board.computerMove(1)).toEqual(false)
+     expect(board.secondPlayerMove(1)).toEqual(false)

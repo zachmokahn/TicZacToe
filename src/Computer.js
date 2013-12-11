@@ -37,18 +37,18 @@
     };
 
     Computer.prototype.checkForComputerWin = function() {
-      return this.checkForPossibleWin(this.board.computerToken);
+      return this.checkForPossibleWin(this.board.secondPlayerToken);
     };
 
     Computer.prototype.checkForBlockPlayerWin = function() {
-      return this.checkForPossibleWin(this.board.playerToken);
+      return this.checkForPossibleWin(this.board.firstPlayerToken);
     };
 
     Computer.prototype.checkForPlayerDoubleThreat = function() {
-      if (this.checkCornerDoubleThreat(this.board.playerToken)) {
+      if (this.checkCornerDoubleThreat(this.board.firstPlayerToken)) {
         return true;
       }
-      if (this.checkWallDoubleThreat(this.board.playerToken)) {
+      if (this.checkWallDoubleThreat(this.board.firstPlayerToken)) {
         return true;
       }
       return false;
@@ -59,7 +59,7 @@
     };
 
     Computer.prototype.checkPlayerOppositeCorner = function() {
-      return this.checkOppositeCorner(this.board.playerToken);
+      return this.checkOppositeCorner(this.board.firstPlayerToken);
     };
 
     Computer.prototype.getAnyCorner = function() {

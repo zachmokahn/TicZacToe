@@ -1,5 +1,5 @@
 class Board
-  constructor: (@playerToken, @computerToken) ->
+  constructor: (@firstPlayerToken, @secondPlayerToken) ->
     @emptyToken = " "
     @spaces = [" "," "," "," "," "," "," "," "," "]
     @cornerSpots = [0,2,6,8]
@@ -15,15 +15,16 @@ class Board
   getSpaces: (locations, symbol) ->
     spot for spot in locations when @checkSpot(spot, symbol)
 
-  playerMove: (location) ->
-    @playMove(location, @playerToken)
+  firstPlayerMove: (location) ->
+    @playMove(location, @firstPlayerToken)
 
-  computerMove: (location) ->
-    @playMove(location, @computerToken)
+  secondPlayerMove: (location) ->
+    @playMove(location, @secondPlayerToken)
 
   playMove: (location, token) ->
     if @validMove(location)
       @spaces[location] = token
+      return true
     else
       false
 
@@ -31,7 +32,7 @@ class Board
      @checkSpot(location, @emptyToken)
 
   checkForWinner: ->
-    for player in [@playerToken, @computerToken]
+    for player in [@firstPlayerToken, @secondPlayerToken]
       return player if @checkForWin(player)
     false
 

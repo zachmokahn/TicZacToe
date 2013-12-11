@@ -13,21 +13,21 @@ class Computer
     return @bestMove if @getAnyWall()
 
   checkForComputerWin: ->
-    @checkForPossibleWin(@board.computerToken)
+    @checkForPossibleWin(@board.secondPlayerToken)
 
   checkForBlockPlayerWin: ->
-    @checkForPossibleWin(@board.playerToken)
+    @checkForPossibleWin(@board.firstPlayerToken)
 
   checkForPlayerDoubleThreat: ->
-    return true if @checkCornerDoubleThreat(@board.playerToken)
-    return true if @checkWallDoubleThreat(@board.playerToken)
+    return true if @checkCornerDoubleThreat(@board.firstPlayerToken)
+    return true if @checkWallDoubleThreat(@board.firstPlayerToken)
     false
 
   checkMiddleAvailability: ->
     @getEmpty([4])
 
   checkPlayerOppositeCorner: ->
-    @checkOppositeCorner(@board.playerToken)
+    @checkOppositeCorner(@board.firstPlayerToken)
 
   getAnyCorner: ->
     @getEmpty(@board.cornerSpots)

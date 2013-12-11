@@ -3,9 +3,9 @@
   var Board;
 
   Board = (function() {
-    function Board(playerToken, computerToken) {
-      this.playerToken = playerToken;
-      this.computerToken = computerToken;
+    function Board(firstPlayerToken, secondPlayerToken) {
+      this.firstPlayerToken = firstPlayerToken;
+      this.secondPlayerToken = secondPlayerToken;
       this.emptyToken = " ";
       this.spaces = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
       this.cornerSpots = [0, 2, 6, 8];
@@ -33,17 +33,18 @@
       return _results;
     };
 
-    Board.prototype.playerMove = function(location) {
-      return this.playMove(location, this.playerToken);
+    Board.prototype.firstPlayerMove = function(location) {
+      return this.playMove(location, this.firstPlayerToken);
     };
 
-    Board.prototype.computerMove = function(location) {
-      return this.playMove(location, this.computerToken);
+    Board.prototype.secondPlayerMove = function(location) {
+      return this.playMove(location, this.secondPlayerToken);
     };
 
     Board.prototype.playMove = function(location, token) {
       if (this.validMove(location)) {
-        return this.spaces[location] = token;
+        this.spaces[location] = token;
+        return true;
       } else {
         return false;
       }
@@ -56,7 +57,7 @@
     Board.prototype.checkForWinner = function() {
       var player, _i, _len, _ref;
 
-      _ref = [this.playerToken, this.computerToken];
+      _ref = [this.firstPlayerToken, this.secondPlayerToken];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         player = _ref[_i];
         if (this.checkForWin(player)) {
