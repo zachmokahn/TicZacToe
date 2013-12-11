@@ -3,96 +3,45 @@
   var Game;
 
   Game = (function() {
-    function Game(player, turn, playerToken) {
-      this.player = player != null ? player : "player1";
-      this.turn = turn != null ? turn : "player";
-      this.playerToken = playerToken != null ? playerToken : "X";
-      this.moveCount = 0;
-      this.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
-      this.gameOver = false;
-      if (this.playerToken === "X") {
-        this.computerToken = "O";
-      } else {
-        this.computerToken = "X";
+    function Game(firstPlayer, secondPlayer, board, firstTurn) {
+      this.firstPlayer = firstPlayer;
+      this.secondPlayer = secondPlayer;
+      this.board = board;
+      if (firstTurn == null) {
+        firstTurn = this.firstPlayer;
       }
-      this.ai = new Computer(this.computerToken, this.playerToken);
+      this.gameOver = false;
+      this.turn = firstTurn;
     }
 
-    Game.prototype.playerMove = function(position) {
-      if (this.checkLocation(position) === " " && this.turn === "player") {
-        this.moveCount++;
-        this.board[position] = this.playerToken;
-        if (this.checkIfWon(this.playerToken)) {
-          this.playerWon();
-          this.gameOver = true;
-        }
-        if (this.moveCount === 9) {
-          return this.nobodyWon();
-        }
-        return this.changeTurn();
+    Game.prototype.playerMove = function(location) {
+      var result;
+
+      if (this.turn === this.firstPlayer) {
+        result = this.board.firstPlayerMove(location);
       }
-    };
-
-    Game.prototype.checkLocation = function(position) {
-      return this.board[position];
-    };
-
-    Game.prototype.computerMove = function() {
-      var position;
-
-      position = this.computerLogic();
-      if (this.checkLocation(position) === " " && this.turn === "computer") {
-        this.moveCount++;
-        this.board[position] = this.computerToken;
-        if (this.checkIfWon(this.computerToken)) {
-          this.computerWon();
-          this.gameOver = true;
-        }
-        if (this.moveCount === 9) {
-          return this.nobodyWon();
-        }
-        return this.changeTurn();
+      if (this.turn === this.secondPlayer) {
+        result = this.board.secondPlayerMove(location);
       }
+      if (result) {
+        this.changeTurn();
+      }
+      return result;
     };
 
     Game.prototype.changeTurn = function() {
-      return this.turn = this.turn === "player" ? "computer" : "player";
+      return this.turn = this.turn === this.firstPlayer ? this.secondPlayer : this.firstPlayer;
     };
 
-    Game.prototype.computerLogic = function() {
-      return this.ai.gameLogic(this.board)[0];
-    };
-
-    Game.prototype.winnerAlert = function(who) {
-      return alert("" + who + " has won this round");
-    };
-
-    Game.prototype.checkIfWon = function(token) {
-      var combos, _i, _len, _ref;
-
-      _ref = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        combos = _ref[_i];
-        if (this.ai.checkSpaces(combos, token, this.board).length === 3) {
-          return true;
-        }
-      }
-      if (this.moveCount === 9) {
+    Game.prototype.checkGameOver = function() {
+      this.winner = this.board.checkForWinner();
+      if (this.winner !== false) {
         this.gameOver = true;
       }
-      return false;
-    };
-
-    Game.prototype.playerWon = function() {
-      return this.winnerAlert(this.player.name);
-    };
-
-    Game.prototype.computerWon = function() {
-      return this.winnerAlert("computer");
-    };
-
-    Game.prototype.nobodyWon = function() {
-      return this.winnerAlert("DRAW: nobody");
+      if (this.board.checkForDraw()) {
+        this.gameOver = true;
+        return this.winner = "Nobody";
+      }
     };
 
     return Game;
