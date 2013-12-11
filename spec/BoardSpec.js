@@ -63,24 +63,24 @@
         return expect(board.checkForDraw()).toEqual(false);
       });
     });
-    describe("playerMove", function() {
+    describe("firstPlayerMove", function() {
       it("should play the correct player token in the correct space if the space is blank", function() {
-        board.playerMove(1);
+        board.firstPlayerMove(1);
         return expect(board.spaces[1]).toEqual("X");
       });
       return it("should return false if the spot is occupied", function() {
         board.spaces = drawBoard;
-        return expect(board.playerMove(1)).toEqual(false);
+        return expect(board.firstPlayerMove(1)).toEqual(false);
       });
     });
-    return describe("computerMove", function() {
+    return describe("secondPlayerMove", function() {
       it("should play the correct computer token in the correct space if the space is blank", function() {
-        board.computerMove(1);
+        board.secondPlayerMove(1);
         return expect(board.spaces[1]).toEqual("O");
       });
       return it("should return false if the spot is occumpied", function() {
         board.spaces = drawBoard;
-        return expect(board.computerMove(1)).toEqual(false);
+        return expect(board.secondPlayerMove(1)).toEqual(false);
       });
     });
   });
