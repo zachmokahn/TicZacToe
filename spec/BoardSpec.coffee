@@ -23,6 +23,12 @@ describe "Board", ->
       expect(board.getSpaces([0,1,2], "X")).toEqual([0,2])
 
   describe "checkForWinner", ->
+    it "should return the 'X' if the player has won without filling in the board", ->
+      board.spaces[0] = "X"
+      board.spaces[4] = "X"
+      board.spaces[8] = "X"
+      expect(board.checkForWinner()).toEqual("X")
+
     it "should return the 'X' the player has won", ->
       board.spaces = drawBoard
       board.spaces[1] = "X"

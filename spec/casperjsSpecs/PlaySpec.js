@@ -11,10 +11,9 @@ casper.test.begin('Empty Board', 5, function(){
     this.test.done();
   });
 });
-casper.test.begin('User Input', 8, function(){
+casper.test.begin('User Input', 7, function(){
   casper.start('http://localhost:8000', function(){
     this.test.assertExists('button#newGame', 'New Game Button is Present');
-    this.test.assertExists('input#playerName', 'Text Field for Player\'s name exists');
     this.test.assertExists('select#firstMove', 'Selector for first move exists');
     this.test.assertExists('select#firstMove option[value="computer"]', 'Selector option for computer exists');
     this.test.assertExists('select#firstMove option[value="player"]', 'Selector option for computer exists');
