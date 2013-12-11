@@ -1,11 +1,15 @@
-game = undefined
+firstPlayer = secondPlayer = board = game = undefined
 
 startGame = ->
-  name = $('#playerName').val()
-  name = "player1" if name is ""
-  firstMove =  $('#firstMove').val()
-  playerToken = $('#playerPiece').val()
-  game = new Game(name, firstMove, playerToken)
+  firstPlayerToken = if $('#playerPiece').val() is "X" then "X" else "O"
+  secondPlayerToken = if $('#playerPiece').val() is "X" then "O" else "X"
+  board = new Board(firstPlayerToken, secondPlayerToken)
+  firstPlayer = new Player("firstPlayer")
+  secondPlayer = new Computer(board)
+  firstMove = $("#firstMove").val()
+  console.log(firstMove)
+  startingPlayer = if firstMove is "player" then firstPlayer else secondPlayer
+  game = new Game(firstPlayer, secondPlayer, board, startingPlayer )
   resetBoard()
 
 resetBoard = ->
@@ -13,19 +17,24 @@ resetBoard = ->
     $("div#space#{space}").removeClass('cross')
     $("div#space#{space}").removeClass('circle')
 
-
-computerMove = ->
-  game.computerMove()
-  setPieces()
-
 playerMove = (space) ->
-  game.playerMove(space)
-  setPieces()
-  computerMove()
+  unless game.gameOver
+    game.playerMove(space)
+    setPieces()
+    gameResults()
+
+gameResults = ->
+  game.checkGameOver()
+  if game.gameOver
+    alert("#{game.winner} wins!")
+
+checkTurn = ->
+  if game.turn is secondPlayer
+    playerMove(secondPlayer.findBestMove())
 
 setPieces = ->
   count = 0
-  for space in game.board
+  for space in board.spaces
     $("div#space#{count}").addClass('cross') if space is "X"
     $("div#space#{count}").addClass('circle') if space is "O"
     count++
@@ -33,8 +42,9 @@ setPieces = ->
 $ ->
   $('#newGame').on "click", (event) ->
     startGame()
-    computerMove() if game.turn is "computer"
-    
+    checkTurn()
+
   $('.boardPiece').on "click", (event) ->
     location = this.id.slice(-1)
     playerMove(location)
+    checkTurn()

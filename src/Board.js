@@ -73,8 +73,8 @@
       _ref = [this.rows, this.columns, this.diagonals];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         combos = _ref[_i];
-        if (true) {
-          return this.hasWinningCombo(combos, symbol);
+        if (this.hasWinningCombo(combos, symbol) === true) {
+          return true;
         }
       }
       return false;

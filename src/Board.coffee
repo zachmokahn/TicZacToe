@@ -38,7 +38,8 @@ class Board
 
   checkForWin: (symbol) ->
     for combos in [@rows, @columns, @diagonals]
-      return @hasWinningCombo(combos, symbol) if true
+      if @hasWinningCombo(combos, symbol) is true
+        return true
     false
 
   hasWinningCombo: (combos, symbol) ->

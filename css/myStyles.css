@@ -8,28 +8,24 @@
   text-align: center;
 }
 
-#name{
-  margin-top: 10px;
-  float: left;
-  width: 24%;
-}
-
 #move{
   margin-top: 10px;
   float: left;
-  width: 24%;
+  width: 32%;
+  text-align: right;
 }
 
 #piece{
   margin-top: 10px;
   float: left;
-  width: 24%;
+  width: 32%;
 }
 
 #new{
   margin-top: 10px;
   float: left;
-  width: 24%;
+  width: 32%;
+  text-align: left;
 }
 
 #container{

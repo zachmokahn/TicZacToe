@@ -31,6 +31,12 @@
       });
     });
     describe("checkForWinner", function() {
+      it("should return the 'X' if the player has won without filling in the board", function() {
+        board.spaces[0] = "X";
+        board.spaces[4] = "X";
+        board.spaces[8] = "X";
+        return expect(board.checkForWinner()).toEqual("X");
+      });
       it("should return the 'X' the player has won", function() {
         board.spaces = drawBoard;
         board.spaces[1] = "X";
