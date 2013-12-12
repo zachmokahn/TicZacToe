@@ -1,16 +1,34 @@
-firstPlayer = secondPlayer = board = game = undefined
+mode = firstPlayerToken = secondPlayerToken = startingPlayer = firstPlayer = secondPlayer = board = game = undefined
 
 startGame = ->
+  resetBoard()
+  getGameMode()
+  assignPlayerTokens()
+  createNewBoard()
+  assignPlayers()
+  assignFirstMove()
+  startNewGame()
+
+getGameMode = ->
+  mode = $("#gameMode").val()
+
+assignPlayerTokens = ->
   firstPlayerToken = if $('#playerPiece').val() is "X" then "X" else "O"
   secondPlayerToken = if $('#playerPiece').val() is "X" then "O" else "X"
+
+createNewBoard = ->
   board = new Board(firstPlayerToken, secondPlayerToken)
+
+assignPlayers = ->
   firstPlayer = new Player("firstPlayer")
-  secondPlayer = new Computer(board)
+  secondPlayer = if mode is "twoPlayer" then new Player("secondPlayer") else new Computer(board)
+
+assignFirstMove = ->
   firstMove = $("#firstMove").val()
-  console.log(firstMove)
   startingPlayer = if firstMove is "player" then firstPlayer else secondPlayer
+
+startNewGame = ->
   game = new Game(firstPlayer, secondPlayer, board, startingPlayer )
-  resetBoard()
 
 resetBoard = ->
   for space in [0..8]
@@ -29,7 +47,7 @@ gameResults = ->
     alert("#{game.winner} wins!")
 
 checkTurn = ->
-  if game.turn is secondPlayer
+  if game.turn is secondPlayer and mode is "singlePlayer"
     playerMove(secondPlayer.findBestMove())
 
 setPieces = ->
@@ -39,12 +57,14 @@ setPieces = ->
     $("div#space#{count}").addClass('circle') if space is "O"
     count++
 
+getLocation = (that) ->
+  location = that.id.slice(-1)
+
 $ ->
   $('#newGame').on "click", (event) ->
     startGame()
     checkTurn()
 
   $('.boardPiece').on "click", (event) ->
-    location = this.id.slice(-1)
-    playerMove(location)
+    playerMove(getLocation(this))
     checkTurn()
