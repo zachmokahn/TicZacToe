@@ -25,7 +25,7 @@ assignPlayers = ->
 
 assignFirstMove = ->
   firstMove = $("#firstMove").val()
-  startingPlayer = if firstMove is "player" then firstPlayer else secondPlayer
+  startingPlayer = if firstMove is "player1" then firstPlayer else secondPlayer
 
 startNewGame = ->
   game = new Game(firstPlayer, secondPlayer, board, startingPlayer )

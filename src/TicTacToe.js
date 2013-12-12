@@ -36,7 +36,7 @@
     var firstMove;
 
     firstMove = $("#firstMove").val();
-    return startingPlayer = firstMove === "player" ? firstPlayer : secondPlayer;
+    return startingPlayer = firstMove === "player1" ? firstPlayer : secondPlayer;
   };
 
   startNewGame = function() {

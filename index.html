@@ -25,16 +25,20 @@
 </head>
 <body>
   <div id="heading">
-    <div id="name">
+    <div id="mode">
+      <label> Game Mode: </label><select id="gameMode">
+        <option value="singlePlayer">Single Player</option>
+        <option value="twoPlayer">Two Player</option>
+      </select>
   </div>
-    <div id="move">
-    <select id="firstMove">
-              <option value="player">Player</option>
-              <option value="computer">Computer</option>
+  <div id="move">
+    <label> First Move: </label><select id="firstMove">
+              <option value="player1">Player 1</option>
+              <option value="player2">Player 2</option>
             </select>
           </div>
           <div id="piece">
-            <select id="playerPiece">
+          <label> First Player Piece: </label><select id="playerPiece">
               <option value="X">X</option>
               <option value="O">O</option>
             </select>
