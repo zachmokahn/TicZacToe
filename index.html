@@ -14,28 +14,31 @@
     <link rel="stylesheet" href="css/myStyles.css">
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/main.css">
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="js/vendor/modernizr-2.6.2.min.js"></script>
     <script type="text/javascript" src="src/Player.js"></script>
     <script type="text/javascript" src="src/Game.js"></script>
     <script type="text/javascript" src="src/Computer.js"></script>
     <script type="text/javascript" src="src/Board.js"></script>
-    <script type="text/javascript" src="src/NewGame.js"></script>
+    <script type="text/javascript" src="src/TicTacToe.js"></script>
     <script src="js/plugins.js"></script>
-    <script src="js/main.js"></script>
 </head>
 <body>
   <div id="heading">
-    <div id="name">
+    <div id="mode">
+      <label> Game Mode: </label><select id="gameMode">
+        <option value="singlePlayer">Single Player</option>
+        <option value="twoPlayer">Two Player</option>
+      </select>
   </div>
-    <div id="move">
-    <select id="firstMove">
-              <option value="player">Player</option>
-              <option value="computer">Computer</option>
+  <div id="move">
+    <label> First Move: </label><select id="firstMove">
+              <option value="player1">Player 1</option>
+              <option value="player2">Player 2</option>
             </select>
           </div>
           <div id="piece">
-            <select id="playerPiece">
+          <label> First Player Piece: </label><select id="playerPiece">
               <option value="X">X</option>
               <option value="O">O</option>
             </select>
