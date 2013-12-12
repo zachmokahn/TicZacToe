@@ -13,28 +13,7 @@
     };
 
     Computer.prototype.findBestMove = function() {
-      if (this.checkForComputerWin()) {
-        return this.bestMove;
-      }
-      if (this.checkForBlockPlayerWin()) {
-        return this.bestMove;
-      }
-      if (this.checkForComputerDoubleThreat()) {
-        return this.bestMove;
-      }
-      if (this.checkForPlayerDoubleThreat()) {
-        return this.bestMove;
-      }
-      if (this.checkMiddleAvailability()) {
-        return this.bestMove;
-      }
-      if (this.checkPlayerOppositeCorner()) {
-        return this.bestMove;
-      }
-      if (this.getAnyCorner()) {
-        return this.bestMove;
-      }
-      if (this.getAnyWall()) {
+      if (this.checkForComputerWin() || this.checkForBlockPlayerWin() || this.checkForComputerDoubleThreat() || this.checkForPlayerDoubleThreat() || this.checkMiddleAvailability() || this.checkPlayerOppositeCorner() || this.getAnyCorner() || this.getAnyWall()) {
         return this.bestMove;
       }
     };
@@ -48,20 +27,17 @@
     };
 
     Computer.prototype.checkForComputerDoubleThreat = function() {
-      if (this.checkCornerDoubleThreat(this.board.secondPlayerToken)) {
-        return this.getCornerDoubleThreat();
+      if (this.canGetCornerDoubleThreat()) {
+        return true;
       }
-      if (this.checkWallDoubleThreat(this.board.secondPlayerToken)) {
+      if (this.canGetWallDoubleThreat()) {
         return true;
       }
       return false;
     };
 
     Computer.prototype.checkForPlayerDoubleThreat = function() {
-      if (this.checkCornerDoubleThreat(this.board.firstPlayerToken)) {
-        return true;
-      }
-      if (this.checkWallDoubleThreat(this.board.firstPlayerToken)) {
+      if (this.checkCornerDoubleThreat(this.board.firstPlayerToken) || this.checkWallDoubleThreat(this.board.firstPlayerToken)) {
         return true;
       }
       return false;
@@ -83,31 +59,44 @@
       return this.getEmpty(this.board.wallSpots);
     };
 
+    Computer.prototype.findEmpty = function(spaces) {
+      return this.board.getSpaces(spaces, this.board.emptyToken);
+    };
+
     Computer.prototype.getEmpty = function(spaces) {
       var availableSpaces;
 
-      availableSpaces = this.board.getSpaces(spaces, this.board.emptyToken);
+      availableSpaces = this.findEmpty(spaces);
       if (availableSpaces.length > 0) {
-        this.getBestMove(availableSpaces);
+        return this.getBestMove(availableSpaces);
+      }
+      return false;
+    };
+
+    Computer.prototype.canGetWallDoubleThreat = function() {
+      if (this.checkWallDoubleThreat(this.board.secondPlayerToken)) {
         return true;
       }
       return false;
     };
 
-    Computer.prototype.getCornerDoubleThreat = function() {
+    Computer.prototype.canGetCornerDoubleThreat = function() {
       var edge, _i, _len, _ref;
 
-      _ref = [[1, 0, 3], [5, 8, 7], [1, 2, 5], [3, 6, 7]];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        edge = _ref[_i];
-        if (this.checkSpots(edge, this.board.emptyToken)) {
-          console.log(edge);
-          console.log(edge[1]);
-          this.getBestMove([edge[1]]);
-          return true;
+      if (this.checkCornerDoubleThreat(this.board.secondPlayerToken)) {
+        _ref = this.allEdges;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          edge = _ref[_i];
+          if (this.checkAllEmpty(edge)) {
+            return this.getBestMove([edge[1]]);
+          }
         }
       }
       return false;
+    };
+
+    Computer.prototype.checkAllEmpty = function(spots) {
+      return this.checkSpots(spots, this.board.emptyToken);
     };
 
     Computer.prototype.checkOppositeCorner = function(token) {
@@ -118,24 +107,25 @@
     };
 
     Computer.prototype.checkIfOppositeAvailable = function(spaces) {
-      var emptySpaces, oppositeSpaces, space;
+      var emptySpaces, oppositeSpaces;
 
-      oppositeSpaces = (function() {
-        var _i, _len, _results;
-
-        _results = [];
-        for (_i = 0, _len = spaces.length; _i < _len; _i++) {
-          space = spaces[_i];
-          _results.push(this.board.oppositeSpots[space]);
-        }
-        return _results;
-      }).call(this);
-      emptySpaces = this.board.getSpaces(oppositeSpaces, this.board.emptyToken);
+      oppositeSpaces = this.findOpposite(spaces);
+      emptySpaces = this.findEmpty(oppositeSpaces);
       if (emptySpaces.length > 0) {
-        this.getBestMove(emptySpaces);
-        return true;
+        return this.getBestMove(emptySpaces);
       }
       return false;
+    };
+
+    Computer.prototype.findOpposite = function(spaces) {
+      var space, _i, _len, _results;
+
+      _results = [];
+      for (_i = 0, _len = spaces.length; _i < _len; _i++) {
+        space = spaces[_i];
+        _results.push(this.board.oppositeSpots[space]);
+      }
+      return _results;
     };
 
     Computer.prototype.checkWallDoubleThreat = function(token) {
@@ -146,11 +136,11 @@
     };
 
     Computer.prototype.wallDoubleThreatPossible = function(token) {
-      var combos, wallCombos, _i, _len;
+      var combos, _i, _len, _ref;
 
-      wallCombos = [[this.board.rows[0], this.board.columns[0]], [this.board.rows[0], this.board.columns[2]], [this.board.rows[2], this.board.columns[0]], [this.board.rows[2], this.board.columns[2]]];
-      for (_i = 0, _len = wallCombos.length; _i < _len; _i++) {
-        combos = wallCombos[_i];
+      _ref = this.wallCombos();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        combos = _ref[_i];
         if (this.occupyBothWalls(combos, token)) {
           return true;
         }
@@ -159,8 +149,7 @@
 
     Computer.prototype.occupyBothWalls = function(combos, token) {
       if (this.occupyWall(combos[0], token) && this.occupyWall(combos[1], token)) {
-        this.getBestMove(this.intersection(combos[0], combos[1]));
-        return true;
+        return this.getBestMove(this.intersection(combos[0], combos[1]));
       }
       return false;
     };
@@ -179,22 +168,18 @@
     };
 
     Computer.prototype.occupyWall = function(combo, token) {
-      return this.board.checkSpot(combo[1], token) && this.board.getSpaces(combo, this.board.emptyToken).length === 2;
+      return this.checkSpot(combo[1], token) && this.findEmpty(combo).length === 2;
     };
 
     Computer.prototype.checkCornerDoubleThreat = function(token) {
       if (this.cornerDoubleThreatPossible(token)) {
-        this.getBestMove(this.board.wallSpots);
-        return true;
+        return this.getBestMove(this.board.wallSpots);
       }
       return false;
     };
 
     Computer.prototype.cornerDoubleThreatPossible = function(token) {
-      if (this.firstCornersOccupied(token) && this.firstEdgesEmpty()) {
-        return true;
-      }
-      if (this.secondCornerOccupied(token) && this.secondEdgesEmpty()) {
+      if ((this.firstCornersOccupied(token) && this.firstEdgesEmpty()) || (this.secondCornerOccupied(token) && this.secondEdgesEmpty())) {
         return true;
       }
       return false;
@@ -209,11 +194,11 @@
     };
 
     Computer.prototype.firstEdgesEmpty = function() {
-      return this.checkEdgesEmpty([[1, 2, 5], [3, 6, 7]]);
+      return this.checkEdgesEmpty([this.allEdges[3], this.allEdges[4]]);
     };
 
     Computer.prototype.secondEdgesEmpty = function() {
-      return this.checkEdgesEmpty([[0, 1, 3], [5, 7, 8]]);
+      return this.checkEdgesEmpty([this.allEdges[1], this.allEdges[2]]);
     };
 
     Computer.prototype.checkEdgesEmpty = function(edges) {
@@ -221,7 +206,7 @@
 
       for (_i = 0, _len = edges.length; _i < _len; _i++) {
         edge = edges[_i];
-        if (this.checkSpots(edge, this.board.emptyToken)) {
+        if (this.getEmpty(edge)) {
           return true;
         }
       }
@@ -233,11 +218,15 @@
 
       for (_i = 0, _len = locations.length; _i < _len; _i++) {
         spot = locations[_i];
-        if (!this.board.checkSpot(spot, token)) {
+        if (!this.checkSpot(spot, token)) {
           return false;
         }
       }
       return true;
+    };
+
+    Computer.prototype.checkSpot = function(spot, token) {
+      return this.board.checkSpot(spot, token);
     };
 
     Computer.prototype.checkForPossibleWin = function(token) {
@@ -258,22 +247,32 @@
 
     Computer.prototype.winIsPossible = function(combo, token) {
       if (this.twoInARow(combo, token) && this.isWinnable(combo)) {
-        this.getBestMove(combo);
-        return true;
+        return this.getBestMove(combo);
       }
       return false;
     };
 
     Computer.prototype.getBestMove = function(combo) {
-      return this.bestMove = this.board.getSpaces(combo, this.board.emptyToken)[0];
+      this.bestMove = this.findEmpty(combo)[0];
+      return true;
     };
 
     Computer.prototype.twoInARow = function(combo, token) {
-      return this.board.getSpaces(combo, token).length === 2;
+      return this.findAll(combo, token).length === 2;
+    };
+
+    Computer.prototype.findAll = function(combo, token) {
+      return this.board.getSpaces(combo, token);
     };
 
     Computer.prototype.isWinnable = function(combo) {
-      return this.board.getSpaces(combo, this.board.emptyToken).length === 1;
+      return this.findEmpty(combo).length === 1;
+    };
+
+    Computer.prototype.allEdges = [[1, 0, 3], [5, 8, 7], [1, 2, 5], [3, 6, 7]];
+
+    Computer.prototype.wallCombos = function() {
+      return [[this.board.rows[0], this.board.columns[0]], [this.board.rows[0], this.board.columns[2]], [this.board.rows[2], this.board.columns[0]], [this.board.rows[2], this.board.columns[2]]];
     };
 
     return Computer;

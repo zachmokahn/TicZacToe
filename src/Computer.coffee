@@ -4,14 +4,7 @@ class Computer
     @board.spaces
 
   findBestMove: ->
-    return @bestMove if @checkForComputerWin()
-    return @bestMove if @checkForBlockPlayerWin()
-    return @bestMove if @checkForComputerDoubleThreat()
-    return @bestMove if @checkForPlayerDoubleThreat()
-    return @bestMove if @checkMiddleAvailability()
-    return @bestMove if @checkPlayerOppositeCorner()
-    return @bestMove if @getAnyCorner()
-    return @bestMove if @getAnyWall()
+    return @bestMove if @checkForComputerWin() or @checkForBlockPlayerWin() or @checkForComputerDoubleThreat() or @checkForPlayerDoubleThreat() or @checkMiddleAvailability() or @checkPlayerOppositeCorner() or @getAnyCorner() or @getAnyWall()
 
   checkForComputerWin: ->
     @checkForPossibleWin(@board.secondPlayerToken)
@@ -20,13 +13,12 @@ class Computer
     @checkForPossibleWin(@board.firstPlayerToken)
 
   checkForComputerDoubleThreat: ->
-    return @getCornerDoubleThreat() if @checkCornerDoubleThreat(@board.secondPlayerToken)
-    return true if @checkWallDoubleThreat(@board.secondPlayerToken)
+    return true if @canGetCornerDoubleThreat()
+    return true if @canGetWallDoubleThreat()
     false
 
   checkForPlayerDoubleThreat: ->
-    return true if @checkCornerDoubleThreat(@board.firstPlayerToken)
-    return true if @checkWallDoubleThreat(@board.firstPlayerToken)
+    return true if @checkCornerDoubleThreat(@board.firstPlayerToken) or @checkWallDoubleThreat(@board.firstPlayerToken)
     false
 
   checkMiddleAvailability: ->
@@ -41,67 +33,64 @@ class Computer
   getAnyWall: ->
     @getEmpty(@board.wallSpots)
 
+  findEmpty: (spaces) ->
+    @board.getSpaces(spaces, @board.emptyToken)
+
   getEmpty: (spaces) ->
-    availableSpaces = @board.getSpaces(spaces, @board.emptyToken)
-    if availableSpaces.length > 0
-      @getBestMove(availableSpaces)
-      return true
+    availableSpaces = @findEmpty(spaces)
+    return @getBestMove(availableSpaces) if availableSpaces.length > 0
     false
 
-  getCornerDoubleThreat: ->
-    for edge in [[1,0,3],[5,8,7],[1,2,5],[3,6,7]]
-      if @checkSpots(edge, @board.emptyToken)
-        console.log(edge)
-        console.log(edge[1])
-        @getBestMove([edge[1]])
-        return true
+  canGetWallDoubleThreat: ->
+    return true if @checkWallDoubleThreat(@board.secondPlayerToken)
     false
+
+  canGetCornerDoubleThreat: ->
+    if @checkCornerDoubleThreat(@board.secondPlayerToken)
+      for edge in @allEdges
+        return @getBestMove([edge[1]]) if @checkAllEmpty(edge)
+    false
+
+  checkAllEmpty: (spots) ->
+    @checkSpots(spots, @board.emptyToken)
 
   checkOppositeCorner: (token) ->
     filledSpaces = @board.getSpaces(@board.cornerSpots, token)
     @checkIfOppositeAvailable(filledSpaces)
 
   checkIfOppositeAvailable: (spaces) ->
-    oppositeSpaces = (@board.oppositeSpots[space] for space in spaces)
-    emptySpaces = @board.getSpaces(oppositeSpaces, @board.emptyToken)
-    if emptySpaces.length > 0
-      @getBestMove(emptySpaces)
-      return true
+    oppositeSpaces = @findOpposite(spaces)
+    emptySpaces = @findEmpty(oppositeSpaces)
+    return @getBestMove(emptySpaces) if emptySpaces.length > 0
     false
+
+  findOpposite: (spaces) ->
+    @board.oppositeSpots[space] for space in spaces
 
   checkWallDoubleThreat: (token) ->
    return true if @wallDoubleThreatPossible(token)
    false
 
   wallDoubleThreatPossible: (token) ->
-    wallCombos = [[@board.rows[0],@board.columns[0]],
-                  [@board.rows[0],@board.columns[2]],
-                  [@board.rows[2],@board.columns[0]],
-                  [@board.rows[2],@board.columns[2]]]
-    for combos in wallCombos
+    for combos in @wallCombos()
       return true if @occupyBothWalls(combos, token)
 
   occupyBothWalls: (combos, token) ->
-    if @occupyWall(combos[0], token) and @occupyWall(combos[1], token)
-      @getBestMove(@intersection(combos[0], combos[1]))
-      return true
+    return @getBestMove(@intersection(combos[0], combos[1])) if @occupyWall(combos[0], token) and @occupyWall(combos[1], token)
     false
 
   intersection: (a, b) ->
     value for value in a when value in b
 
   occupyWall: (combo, token) ->
-    @board.checkSpot(combo[1], token) and @board.getSpaces(combo, @board.emptyToken).length is 2
+    @checkSpot(combo[1], token) and @findEmpty(combo).length is 2
 
   checkCornerDoubleThreat: (token) ->
-    if @cornerDoubleThreatPossible(token)
-      @getBestMove(@board.wallSpots)
-      return true
+    return @getBestMove(@board.wallSpots) if @cornerDoubleThreatPossible(token)
     false
 
   cornerDoubleThreatPossible: (token) ->
-    return true if @firstCornersOccupied(token) and @firstEdgesEmpty()
-    return true if @secondCornerOccupied(token) and @secondEdgesEmpty()
+    return true if (@firstCornersOccupied(token) and @firstEdgesEmpty()) or (@secondCornerOccupied(token) and @secondEdgesEmpty())
     false
 
   firstCornersOccupied: (token) ->
@@ -111,20 +100,23 @@ class Computer
     @checkSpots([2,6], token)
 
   firstEdgesEmpty: ->
-    @checkEdgesEmpty([[1,2,5],[3,6,7]])
+    @checkEdgesEmpty([@allEdges[3],@allEdges[4]])
 
   secondEdgesEmpty: ->
-    @checkEdgesEmpty([[0,1,3],[5,7,8]])
+    @checkEdgesEmpty([@allEdges[1],@allEdges[2]])
 
   checkEdgesEmpty: (edges) ->
     for edge in edges
-      return true if @checkSpots(edge, @board.emptyToken)
+      return true if @getEmpty(edge)
     false
 
   checkSpots: (locations, token) ->
     for spot in locations
-      return false unless @board.checkSpot(spot, token)
+      return false unless @checkSpot(spot, token)
     true
+
+  checkSpot: (spot, token) ->
+    @board.checkSpot(spot, token)
 
   checkForPossibleWin: (token) ->
     for winCombos in [@board.rows, @board.columns, @board.diagonals]
@@ -133,19 +125,25 @@ class Computer
     false
 
   winIsPossible: (combo, token) ->
-    if @twoInARow(combo, token) and @isWinnable(combo)
-      @getBestMove(combo)
-      return true
+    return @getBestMove(combo) if @twoInARow(combo, token) and @isWinnable(combo)
     false
 
   getBestMove: (combo) ->
-    @bestMove = @board.getSpaces(combo, @board.emptyToken)[0]
+    @bestMove = @findEmpty(combo)[0]
+    true
 
   twoInARow: (combo, token) ->
-    @board.getSpaces(combo, token).length is 2
+    @findAll(combo, token).length is 2
+
+  findAll: (combo, token) ->
+    @board.getSpaces(combo, token)
 
   isWinnable: (combo) ->
-    @board.getSpaces(combo, @board.emptyToken).length is 1
+    @findEmpty(combo).length is 1
 
+  allEdges: [[1,0,3],[5,8,7],[1,2,5],[3,6,7]]
+
+  wallCombos: ->
+    [[@board.rows[0],@board.columns[0]], [@board.rows[0],@board.columns[2]], [@board.rows[2],@board.columns[0]], [@board.rows[2],@board.columns[2]]]
 
 window.Computer = Computer
