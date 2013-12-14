@@ -1,7 +1,7 @@
 casper.test.comment('Initial Game Board')
 casper.test.begin('Empty Board', 5, function(){
   casper.start('http://localhost:8000', function(){
-    this.test.assertExists('#container', 'Game Board is present');
+    this.test.assertExists('#game', 'Game Board is present');
     this.test.assertElementCount('.row', 3);
     this.test.assertElementCount('.boardPiece', 9);
     this.test.assertDoesntExist('.cross', 'Game Board has no X\'s');
