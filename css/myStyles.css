@@ -1,57 +1,32 @@
-*{
-  padding: 0px;
-  margin: 0px;
+#options{
+  padding-top: 1.5%;
+  text-align: center;
+  padding-bottom: 1.5%;
 }
 
-#heading{
-  display: inline;
-  text-align: center;
+#game{
+  margin-top: 2.5%;
+  margin-left: 20%;
+  margin-right: 20%;
 }
 
-#mode{
-  margin-top: 10px;
-  float: left;
-  width: 24%;
-  text-align: center;
-}
-#move{
-  margin-top: 10px;
-  float: left;
-  width: 24%;
-  text-align: center;
-}
-
-#piece{
-  margin-top: 10px;
-  float: left;
-  width: 24%;
-  text-align: center;
-}
-
-#new{
-  margin-top: 10px;
-  float: left;
-  width: 24%;
-  text-align: center;
-}
-
-#container{
-  padding-top: 50px;
-  text-align: center;
+.option {
   width: 100%;
+  display: block;
+  float:left;
+  width: 23.8%;
 }
-.row{
-  display: inline-block;
-  width: 60%;
-  margin-top: -8px;
+
+.row {
+  width: 100%;
 }
 
 .boardPiece{
-  text-align: center;
-  display: inline-block;
-  width: 30%;
+  display: block;
+  float:left;
   padding-bottom: 30%;
   border: solid black 1px;
+  width: 32.26%;
 }
 
 .cross{
@@ -68,3 +43,37 @@
   background-position: center;
 }
 
+@media only screen and (max-width: 720px) {
+
+  #game{
+    margin-left: 12.5%;
+    width: 75%;
+    margin-top: 48%;
+  }
+
+  .option {
+    text-align: right;
+    width: 67%;
+    padding-bottom: 3%;
+  }
+
+@media only screen and (orientation : landscape) {
+
+  #options {
+    width: 33%;
+    text-align: right;
+    float: left;
+  }
+
+  #new {
+    padding-top: 25%;
+    text-align: center;
+  }
+
+  #game {
+    margin: 0;
+    width: 50%;
+    float: right;
+    margin-right: 10%;
+    margin-top: 1%;
+  }
